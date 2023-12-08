@@ -1,0 +1,47 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.devices {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  height: 100vh;
+  margin: 20px;
+}
+
+.crests {
+  margin: 20px;
+  position: relative;
+}
+
+.crests .tag {
+  height: 350px;
+}
+
+.crest {
+  position: absolute;
+  top: 140px;
+  left: 3px;
+}
+
+.icon.courage {
+  background-image: url("../assets/icons/crest-1-courage.svg");
+  /* ,
+  "src/assets/icons/crest-2-friendship.svg",
+  "src/assets/icons/crest-3-love.svg",
+  "src/assets/icons/crest-4-knowledge.svg",
+  "src/assets/icons/crest-5-sincerity.svg",
+  "src/assets/icons/crest-6-reliability.svg",
+  "src/assets/icons/crest-7-hope.svg",
+  "src/assets/icons/crest-8-light.svg",
+  "src/assets/icons/crest-9-kindness.svg",
+  "src/assets/icons/crest-10-miracles.svg",
+  "src/assets/icons/crest-11-destiny.svg", */
+}
+
+.courage svg {
+  fill: red;
+}
