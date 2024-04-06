@@ -12,6 +12,50 @@ body {
   margin: 20px;
 }
 
+.devices .digivice {
+  width: 300px;
+  position: relative;
+}
+
+.digivice img {
+  width: 100%;
+}
+
+.digivice button {
+  position: absolute;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid black;
+  border-radius: 50%;
+}
+
+.digivice button:hover {
+  background-color: rgba(83, 132, 214, .5);
+}
+
+.digivice .btn-evolution {
+  top: 106px;
+  left: 17px;
+  width: 58px;
+  height: 58px;
+}
+
+.digivice .btn-prev,
+.digivice .btn-next {
+  width: 52px;
+  height: 36px;
+}
+
+.digivice .btn-prev {
+  top: 81px;
+  right: 26px;
+}
+
+.digivice .btn-next {
+  top: 148px;
+  right: 25px;
+}
+
 .crests {
   margin: 20px;
   position: relative;
@@ -23,25 +67,20 @@ body {
 
 .crest {
   position: absolute;
-  top: 140px;
-  left: 3px;
+  background-color: orange;
+  top: 169px;
+  left: 42px;
+  width: 100px;
+  height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  width: 51px;
 }
 
 .icon.courage {
-  background-image: url("../assets/icons/crest-1-courage.svg");
-  /* ,
-  "src/assets/icons/crest-2-friendship.svg",
-  "src/assets/icons/crest-3-love.svg",
-  "src/assets/icons/crest-4-knowledge.svg",
-  "src/assets/icons/crest-5-sincerity.svg",
-  "src/assets/icons/crest-6-reliability.svg",
-  "src/assets/icons/crest-7-hope.svg",
-  "src/assets/icons/crest-8-light.svg",
-  "src/assets/icons/crest-9-kindness.svg",
-  "src/assets/icons/crest-10-miracles.svg",
-  "src/assets/icons/crest-11-destiny.svg", */
-}
-
-.courage svg {
   fill: red;
 }
