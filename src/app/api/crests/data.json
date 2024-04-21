@@ -1,0 +1,106 @@
+{
+  "crests": [
+    {
+      "id": 1,
+      "names": [
+        "agumon",
+        "greymon",
+        "skullgreymon",
+        "metalgreymon",
+        "omegamon",
+        "wargreymon"
+      ]
+    },
+    {
+      "id": 2,
+      "names": [
+        "gabumon",
+        "garurumon",
+        "metalgarurumon",
+        "weregarurumon"
+      ]
+    },
+    {
+      "id": 3,
+      "names": [
+        "pyomon",
+        "birdramon",
+        "garudamon",
+        "hououmon"
+      ]
+    },
+    {
+      "id": 4,
+      "names": [
+        "tentomon",
+        "kabuterimon",
+        "atlurkabuterimon",
+        "herculeskabuterimon"
+      ]
+    },
+    {
+      "id": 5,
+      "names": [
+        "palmon",
+        "togemon",
+        "lilimon",
+        "rosemon"
+      ]
+    },
+    {
+      "id": 6,
+      "names": [
+        "gomamon",
+        "ikkakumon",
+        "zudomon",
+        "vikemon"
+      ]
+    },
+    {
+      "id": 7,
+      "names": [
+        "patamon",
+        "angemon",
+        "holyangemon",
+        "seraphimon"
+      ]
+    },
+    {
+      "id": 8,
+      "names": [
+        "plotmon",
+        "tailmon",
+        "angewomon",
+        "ophanimon"
+      ]
+    },
+    {
+      "id": 9,
+      "names": [
+        "wormmon",
+        "stingmon",
+        "jewelbeemon",
+        "banchostingmon"
+      ]
+    },
+    {
+      "id": 10,
+      "names": [
+        "monodramon",
+        "strikedramon",
+        "cyberdramon",
+        "justimon"
+      ]
+    },
+    {
+      "id": 11,
+      "names": [
+        "terriermon",
+        "rapidmon-armor",
+        "galgomon",
+        "rapidmon",
+        "saintgalgomon"
+      ]
+    }
+  ]
+}
