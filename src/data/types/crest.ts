@@ -1,6 +1,10 @@
 interface Crest {
   id: number
-  names: string[]
+  name: string
+  fill: string
+  color: string
+  backgroundColor: string
+  digimons: string[]
 }
 
 export type Crests = Crest[]

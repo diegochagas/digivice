@@ -2,18 +2,26 @@
   "crests": [
     {
       "id": 1,
-      "names": [
+      "name": "courage",
+      "fill": "#bf6316",
+      "backgroundColor": "#e69b49",
+      "digimons": [
+        "koromon",
         "agumon",
         "greymon",
         "skullgreymon",
         "metalgreymon",
-        "omegamon",
-        "wargreymon"
+        "wargreymon",
+        "omegamon"
       ]
     },
     {
       "id": 2,
-      "names": [
+      "name": "friendship",
+      "fill": "#5773aa",
+      "backgroundColor": "#8dade1",
+      "digimons": [
+        "tsunomon",
         "gabumon",
         "garurumon",
         "metalgarurumon",
@@ -22,7 +30,11 @@
     },
     {
       "id": 3,
-      "names": [
+      "name": "love",
+      "fill": "#9d2830",
+      "backgroundColor": "#dc646d",
+      "digimons": [
+        "yokomon",
         "pyomon",
         "birdramon",
         "garudamon",
@@ -31,7 +43,11 @@
     },
     {
       "id": 4,
-      "names": [
+      "name": "knowledge",
+      "fill": "#7d649b",
+      "backgroundColor": "#ab92cb",
+      "digimons": [
+        "motimon",
         "tentomon",
         "kabuterimon",
         "atlurkabuterimon",
@@ -40,7 +56,11 @@
     },
     {
       "id": 5,
-      "names": [
+      "name": "sincerity",
+      "fill": "#6c9948",
+      "backgroundColor": "#b7e398",
+      "digimons": [
+        "tanemon",
         "palmon",
         "togemon",
         "lilimon",
@@ -49,7 +69,11 @@
     },
     {
       "id": 6,
-      "names": [
+      "name": "reliability",
+      "fill": "#626b7a",
+      "backgroundColor": "#a4aeba",
+      "digimons": [
+        "bukamon",
         "gomamon",
         "ikkakumon",
         "zudomon",
@@ -58,7 +82,11 @@
     },
     {
       "id": 7,
-      "names": [
+      "name": "hope",
+      "fill": "#c0a754",
+      "backgroundColor": "#f3e195",
+      "digimons": [
+        "tokomon",
         "patamon",
         "angemon",
         "holyangemon",
@@ -67,7 +95,11 @@
     },
     {
       "id": 8,
-      "names": [
+      "name": "light",
+      "fill": "#ab4479",
+      "backgroundColor": "#e295c3",
+      "digimons": [
+        "nyaromon",
         "plotmon",
         "tailmon",
         "angewomon",
@@ -76,7 +108,11 @@
     },
     {
       "id": 9,
-      "names": [
+      "name": "kindness",
+      "fill": "#b49cb8",
+      "backgroundColor": "#debddc",
+      "digimons": [
+        "minomon",
         "wormmon",
         "stingmon",
         "jewelbeemon",
@@ -85,7 +121,11 @@
     },
     {
       "id": 10,
-      "names": [
+      "name": "miracles",
+      "fill": "#563e14",
+      "backgroundColor": "#beac2c",
+      "digimons": [
+        "hopmon",
         "monodramon",
         "strikedramon",
         "cyberdramon",
@@ -94,7 +134,11 @@
     },
     {
       "id": 11,
-      "names": [
+      "name": "destiny",
+      "fill": "#9b6024",
+      "backgroundColor": "#dbbd64",
+      "digimons": [
+        "gummymon",
         "terriermon",
         "rapidmon-armor",
         "galgomon",
