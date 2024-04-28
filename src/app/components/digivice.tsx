@@ -14,48 +14,75 @@ export function Digivice({ crests }: DigiviceProps) {
   const digimons = crests[crestIndex].digimons
   const videoRef = useRef<HTMLVideoElement>(null)
   const [digimonIndex, setDigimonIndex] = useState<number>(0)
-  const getVideoURL = (crest: string, digimon: string) => `/videos/${crest}/${digimon}.mp4`
-  const [videoURL, setVideoURL] = useState(getVideoURL('courage', 'agumon'))
+  const getVideoSrc = (crest: string, digimon: string) => `/videos/${crest}/${digimon}.mp4`
+  const [videoSrc, setVideoSrc] = useState(getVideoSrc('courage', 'agumon'))
   const getDigimonSrc = (crest: string, digimon: string) => `/images/${crest}/${digimon}.jpg`
   const [digimonSrc, setDigimonSrc] = useState(getDigimonSrc('courage', 'koromon'))
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const [hasVideoEnded, setHasVideoEnded] = useState(false)
+  const [isShowingSkullGreymon, setIsShowingSkullGreymon] = useState(false)
+  const isLastDigimon = digimonIndex >= digimons.length - 1
+  const randomNumber = Math.floor(Math.random() * 4) + 1
+  const isAlternativeEvolution = true//randomNumber === 4
+  const isGreymon = crestIndex === 0 && digimonIndex === 1
+  const isSkullGreymon = crestIndex === 0 && digimonIndex === 2
+  const isMetalGarurumon = crestIndex === 1 && digimonIndex === 4
+  const isOmegamon = crestIndex === 1 && digimonIndex === 5
+  
+  useEffect(() => {
+    const digimonNewIndex = isLastDigimon ? 1 : digimonIndex + 1
+    const crest = isMetalGarurumon ? 'courage' : crests[crestIndex].name
+    const digimon = crests[crestIndex].digimons[digimonNewIndex]
+    setVideoSrc(getVideoSrc(crest, digimon))
+  }, [crestIndex, crests, digimonIndex, isLastDigimon, isMetalGarurumon])
 
   useEffect(() => {
-    const crest = crests[crestIndex].name
-    const digimon = crests[crestIndex].digimons[digimonIndex + 1]
-    setVideoURL(getVideoURL(crest, digimon))
-  }, [crestIndex, crests, digimonIndex])
-
-  useEffect(() => {
-    const crest = crests[crestIndex].name
+    const crest = isOmegamon ? 'courage' : crests[crestIndex].name
     const imageIndex = (!hasVideoEnded && digimonIndex >= 1) ? digimonIndex - 1 : digimonIndex
-    const digimon = crests[crestIndex].digimons[imageIndex]
-    setDigimonSrc(getDigimonSrc(crest, digimon))
-  }, [crestIndex, crests, digimonIndex, hasVideoEnded])
+    let digimon = crests[crestIndex].digimons[imageIndex]
+    if (hasVideoEnded) {
+      if (isShowingSkullGreymon) {
+        digimon = 'skullgreymon'
+        if (imageIndex === 0) {
+          setIsShowingSkullGreymon(false)
+        }
+      }
+      setDigimonSrc(getDigimonSrc(crest, digimon))
+    }
+  }, [crestIndex, crests, digimonIndex, hasVideoEnded, isOmegamon, isShowingSkullGreymon])
 
   function getDigimonModifier() {
-    if (crestIndex === 0 && digimonIndex === 1) {
-      const randomNumber = Math.floor(Math.random() * 3) + 1
-      if (randomNumber === 3) return 5
-      return 2
+    if (isGreymon) {
+      return isAlternativeEvolution ? 1 : 2
+    } else if (isSkullGreymon) {
+      setIsShowingSkullGreymon(true)
+      return 4
     }
     return 1
   }
   
   function handleEvolution() {
-    videoRef.current?.load()
-    videoRef.current?.play()
-    
-    setIsVideoPlaying(true)
-    setHasVideoEnded(false)
-    
-    if (digimonIndex < digimons.length - 1) setDigimonIndex(prev => prev + getDigimonModifier())
-    else setDigimonIndex(0)
+    if (isLastDigimon) {
+      videoRef.current?.pause()
+      
+      setIsVideoPlaying(false)
+      setHasVideoEnded(true)
+      
+      setDigimonIndex(0)
+    } else {
+      videoRef.current?.load()
+      videoRef.current?.play()
+      
+      setIsVideoPlaying(true)
+      setHasVideoEnded(false)
+
+      setDigimonIndex(prev => prev + getDigimonModifier())
+    }
   }
   
   function handlePrevCrest() {
     setDigimonIndex(0)
+    setIsVideoPlaying(false)
     if (crestIndex > 0) setCrestIndex(prev => prev - 1)
     else setCrestIndex(crests.length - 1)
     videoRef.current?.load()
@@ -63,6 +90,7 @@ export function Digivice({ crests }: DigiviceProps) {
   
   function handleNextCrest() {
     setDigimonIndex(0)
+    setIsVideoPlaying(false)
     if (crestIndex < crests.length - 1) setCrestIndex(prev => prev + 1)
     else setCrestIndex(0)
     videoRef.current?.load()
@@ -106,7 +134,7 @@ export function Digivice({ crests }: DigiviceProps) {
         preload="none"
         onEnded={handleVideoEnd}
       >
-        <source src={videoURL} type="video/mp4" />
+        <source src={videoSrc} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
     </div>

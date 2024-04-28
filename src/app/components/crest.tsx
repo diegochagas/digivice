@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image';
-import { CrestIcon } from './icons/crest';
+import { CrestIcon } from './icons';
 import { useCrest } from '@/context/crest-context'
 import { Crests } from '@/data/types/crest';
 
