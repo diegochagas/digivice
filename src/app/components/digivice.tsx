@@ -16,15 +16,16 @@ export function Digivice({ crests }: DigiviceProps) {
   const [digimonIndex, setDigimonIndex] = useState<number>(0)
   const getVideoSrc = (crest: string, digimon: string) => `/videos/${crest}/${digimon}.mp4`
   const [videoSrc, setVideoSrc] = useState(getVideoSrc('courage', 'agumon'))
-  const getDigimonSrc = (crest: string, digimon: string) => `/images/${crest}/${digimon}.jpg`
+  const getDigimonSrc = (crest: string, digimon: string) => `/images/${crest}/${digimon}.png`
   const [digimonSrc, setDigimonSrc] = useState(getDigimonSrc('courage', 'koromon'))
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const [hasVideoEnded, setHasVideoEnded] = useState(false)
   const [isShowingSkullGreymon, setIsShowingSkullGreymon] = useState(false)
   const isLastDigimon = digimonIndex >= digimons.length - 1
   const randomNumber = Math.floor(Math.random() * 4) + 1
-  const isAlternativeEvolution = true//randomNumber === 4
+  const isAlternativeEvolution = randomNumber === 4
   const isGreymon = crestIndex === 0 && digimonIndex === 1
+  const isShowingGreymon = crestIndex === 0 && digimonIndex === 3
   const isSkullGreymon = crestIndex === 0 && digimonIndex === 2
   const isMetalGarurumon = crestIndex === 1 && digimonIndex === 4
   const isOmegamon = crestIndex === 1 && digimonIndex === 5
@@ -38,7 +39,7 @@ export function Digivice({ crests }: DigiviceProps) {
 
   useEffect(() => {
     const crest = isOmegamon ? 'courage' : crests[crestIndex].name
-    const imageIndex = (!hasVideoEnded && digimonIndex >= 1) ? digimonIndex - 1 : digimonIndex
+    const imageIndex = ((!hasVideoEnded && digimonIndex >= 1) || isShowingGreymon) ? digimonIndex - 1 : digimonIndex
     let digimon = crests[crestIndex].digimons[imageIndex]
     if (hasVideoEnded) {
       if (isShowingSkullGreymon) {
@@ -49,7 +50,7 @@ export function Digivice({ crests }: DigiviceProps) {
       }
       setDigimonSrc(getDigimonSrc(crest, digimon))
     }
-  }, [crestIndex, crests, digimonIndex, hasVideoEnded, isOmegamon, isShowingSkullGreymon])
+  }, [crestIndex, crests, digimonIndex, hasVideoEnded, isOmegamon, isShowingGreymon, isShowingSkullGreymon])
 
   function getDigimonModifier() {
     if (isGreymon) {
@@ -104,32 +105,43 @@ export function Digivice({ crests }: DigiviceProps) {
   return (
     <div className="relative">
       <button
-        className="absolute cursor-pointer bg-transparent rounded-full top-[99px] left-4 w-[54px] h-[54px] hover:bg-blue-500 hover:bg-opacity-50"
+        className="absolute cursor-pointer bg-transparent rounded-full top-[99px] left-4 w-[54px] h-[54px] hover:bg-blue-500 hover:bg-opacity-50 z-50"
         onClick={handleEvolution}
       />
       <button
-        className="absolute cursor-pointer bg-transparent rounded-full top-[77px] right-6 w-12 h-8 hover:bg-blue-500 hover:bg-opacity-50"
+        className="absolute cursor-pointer bg-transparent rounded-full top-[77px] right-6 w-12 h-8 hover:bg-blue-500 hover:bg-opacity-50 z-50"
         onClick={handlePrevCrest}
       />
       <button
-        className="absolute cursor-pointer bg-transparent rounded-full top-[139px] right-6 w-12 h-8 hover:bg-blue-500 hover:bg-opacity-50"
+        className="absolute cursor-pointer bg-transparent rounded-full top-[139px] right-6 w-12 h-8 hover:bg-blue-500 hover:bg-opacity-50 z-50"
         onClick={handleNextCrest}
       />
 
-      <Image src="/images/digivice-1.png" alt="digivice frame" width={280} height={248} />
+      <Image
+        className="relative z-40"
+        src="/images/digivice-1.png"
+        alt="digivice frame"
+        style={{ width:'280px', height: "248px" }}
+        width={280}
+        height={248}
+        priority={true}
+      />
 
-      {!isVideoPlaying && (
-        <Image
-          className="absolute top-[82px] left-[95px] z-20"
-          src={digimonSrc}
-          alt="digimon"
-          width={88}
-          height={88}
-        />
+      {!isVideoPlaying && ( 
+        <>
+          <Image
+            className="absolute top-[82px] left-[95px] z-30"
+            src={digimonSrc}
+            alt="digimon"
+            width={88}
+            height={88}
+          />
+          <div className="absolute top-16 left-20 w-28 h-28 z-20" style={{ backgroundColor: '#0f2425' }} />
+        </>
       )}
 
       <video
-        className="absolute w-[90px] h-[90px] top-[81px] left-[94px]"
+        className="absolute w-[90px] h-[90px] top-[81px] left-[94px] z-10"
         ref={videoRef}
         preload="none"
         onEnded={handleVideoEnd}

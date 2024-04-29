@@ -14,7 +14,14 @@ export function Crest({ crests }: CrestProps) {
 
   return (
     <div className="relative">
-      <Image className="relative z-30" src="/images/crest-0-tag.png" alt="tag frame" width={186} height={350} />
+      <Image
+        className="relative z-30"
+        src="/images/crest-0-tag.png"
+        alt="tag frame"
+        width={186}
+        height={350}
+        style={{ width:'186px', height: "350px" }}
+      />
 
       <CrestIcon
         className="absolute top-[175px] left-[64px] w-14 h-14 z-20"
@@ -22,7 +29,7 @@ export function Crest({ crests }: CrestProps) {
         fill={crests[crestIndex].fill}
       />
 
-      <div className="absolute w-28 h-28 top-36 left-9 z-0" style={{ background: crests[crestIndex].backgroundColor }} />
+      <div className="absolute w-28 h-28 top-36 left-9 z-10" style={{ background: crests[crestIndex].backgroundColor }} />
     </div>
   )
 }
