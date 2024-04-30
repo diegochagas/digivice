@@ -1,9 +1,9 @@
 'use client'
 
+import { useRef, useState } from 'react'
 import { useCrest } from '@/context/crest-context'
 import { Crests } from '@/data/types/crest'
-import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
+import { Assets } from './assets'
 
 interface DigiviceProps {
   crests: Crests
@@ -11,56 +11,11 @@ interface DigiviceProps {
 
 export function Digivice({ crests }: DigiviceProps) {
   const { crestIndex, setCrestIndex } = useCrest()
-  const digimons = crests[crestIndex].digimons
   const videoRef = useRef<HTMLVideoElement>(null)
   const [digimonIndex, setDigimonIndex] = useState<number>(0)
-  const getVideoSrc = (crest: string, digimon: string) => `/videos/${crest}/${digimon}.mp4`
-  const [videoSrc, setVideoSrc] = useState(getVideoSrc('courage', 'agumon'))
-  const getDigimonSrc = (crest: string, digimon: string) => `/images/${crest}/${digimon}.png`
-  const [digimonSrc, setDigimonSrc] = useState(getDigimonSrc('courage', 'koromon'))
+  const isLastDigimon = digimonIndex >= crests[crestIndex].digimons.length - 1
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const [hasVideoEnded, setHasVideoEnded] = useState(false)
-  const [isShowingSkullGreymon, setIsShowingSkullGreymon] = useState(false)
-  const isLastDigimon = digimonIndex >= digimons.length - 1
-  const randomNumber = Math.floor(Math.random() * 4) + 1
-  const isAlternativeEvolution = randomNumber === 4
-  const isGreymon = crestIndex === 0 && digimonIndex === 1
-  const isShowingGreymon = crestIndex === 0 && digimonIndex === 3
-  const isSkullGreymon = crestIndex === 0 && digimonIndex === 2
-  const isMetalGarurumon = crestIndex === 1 && digimonIndex === 4
-  const isOmegamon = crestIndex === 1 && digimonIndex === 5
-  
-  useEffect(() => {
-    const digimonNewIndex = isLastDigimon ? 1 : digimonIndex + 1
-    const crest = isMetalGarurumon ? 'courage' : crests[crestIndex].name
-    const digimon = crests[crestIndex].digimons[digimonNewIndex]
-    setVideoSrc(getVideoSrc(crest, digimon))
-  }, [crestIndex, crests, digimonIndex, isLastDigimon, isMetalGarurumon])
-
-  useEffect(() => {
-    const crest = isOmegamon ? 'courage' : crests[crestIndex].name
-    const imageIndex = ((!hasVideoEnded && digimonIndex >= 1) || isShowingGreymon) ? digimonIndex - 1 : digimonIndex
-    let digimon = crests[crestIndex].digimons[imageIndex]
-    if (hasVideoEnded) {
-      if (isShowingSkullGreymon) {
-        digimon = 'skullgreymon'
-        if (imageIndex === 0) {
-          setIsShowingSkullGreymon(false)
-        }
-      }
-      setDigimonSrc(getDigimonSrc(crest, digimon))
-    }
-  }, [crestIndex, crests, digimonIndex, hasVideoEnded, isOmegamon, isShowingGreymon, isShowingSkullGreymon])
-
-  function getDigimonModifier() {
-    if (isGreymon) {
-      return isAlternativeEvolution ? 1 : 2
-    } else if (isSkullGreymon) {
-      setIsShowingSkullGreymon(true)
-      return 4
-    }
-    return 1
-  }
   
   function handleEvolution() {
     if (isLastDigimon) {
@@ -77,7 +32,7 @@ export function Digivice({ crests }: DigiviceProps) {
       setIsVideoPlaying(true)
       setHasVideoEnded(false)
 
-      setDigimonIndex(prev => prev + getDigimonModifier())
+      setDigimonIndex(prev => prev + 1)
     }
   }
   
@@ -117,38 +72,15 @@ export function Digivice({ crests }: DigiviceProps) {
         onClick={handleNextCrest}
       />
 
-      <Image
-        className="relative z-40"
-        src="/images/digivice-1.png"
-        alt="digivice frame"
-        style={{ width:'280px', height: "248px" }}
-        width={280}
-        height={248}
-        priority={true}
+      <Assets
+        videoRef={videoRef}
+        isVideoPlaying={isVideoPlaying}
+        hasVideoEnded={hasVideoEnded}
+        handleVideoEnd={handleVideoEnd}
+        crests={crests}
+        crestIndex={crestIndex}
+        digimonIndex={digimonIndex}
       />
-
-      {!isVideoPlaying && ( 
-        <>
-          <Image
-            className="absolute top-[82px] left-[95px] z-30"
-            src={digimonSrc}
-            alt="digimon"
-            width={88}
-            height={88}
-          />
-          <div className="absolute top-16 left-20 w-28 h-28 z-20" style={{ backgroundColor: '#0f2425' }} />
-        </>
-      )}
-
-      <video
-        className="absolute w-[90px] h-[90px] top-[81px] left-[94px] z-10"
-        ref={videoRef}
-        preload="none"
-        onEnded={handleVideoEnd}
-      >
-        <source src={videoSrc} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
     </div>
   )
 }

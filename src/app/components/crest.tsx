@@ -13,10 +13,10 @@ export function Crest({ crests }: CrestProps) {
   const { crestIndex } = useCrest()
 
   return (
-    <div className="relative">
+    <div className="relative my-5">
       <Image
         className="relative z-30"
-        src="/images/crest-0-tag.png"
+        src="/images/tag.png"
         alt="tag frame"
         width={186}
         height={350}

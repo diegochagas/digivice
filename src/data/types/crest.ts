@@ -5,6 +5,7 @@ interface Crest {
   color: string
   backgroundColor: string
   digimons: string[]
+  alternativeEvolution?: string
 }
 
 export type Crests = Crest[]

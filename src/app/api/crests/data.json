@@ -9,11 +9,11 @@
         "koromon",
         "agumon",
         "greymon",
-        "skullgreymon",
         "metalgreymon",
         "wargreymon",
         "omegamon"
-      ]
+      ],
+      "alternativeEvolution": "skullgreymon"
     },
     {
       "id": 2,
