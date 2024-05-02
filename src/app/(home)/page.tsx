@@ -11,7 +11,7 @@ async function getCrests(): Promise<Crests> {
         revalidate: 60 * 60, // 1 hour
       },
     })
-  console.log('RESPONSE: ', response.status)
+
     const crests = await response.json()
   
     return crests
