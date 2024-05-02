@@ -13,7 +13,7 @@ export function Digivice({ crests }: DigiviceProps) {
   const { crestIndex, setCrestIndex } = useCrest()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [digimonIndex, setDigimonIndex] = useState<number>(0)
-  const isLastDigimon = digimonIndex >= crests[crestIndex].digimons.length - 1
+  const isLastDigimon = digimonIndex >= crests[crestIndex]?.digimons?.length - 1
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const [hasVideoEnded, setHasVideoEnded] = useState(false)
   

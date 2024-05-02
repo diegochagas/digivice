@@ -5,15 +5,21 @@ import { Crest } from '../components/crest'
 import Image from 'next/image'
 
 async function getCrests(): Promise<Crests> {
-  const response = await api('/crests', {
-    next: {
-      revalidate: 60 * 60, // 1 hour
-    },
-  })
+  try {
+    const response = await api('/crests', {
+      next: {
+        revalidate: 60 * 60, // 1 hour
+      },
+    })
+  console.log('RESPONSE: ', response.status)
+    const crests = await response.json()
+  
+    return crests
+  } catch(err) {
+    console.error('ERROR: ', err)
 
-  const crests = await response.json()
-
-  return crests
+    return []
+  }
 }
 
 export default async function Home() {

@@ -26,10 +26,10 @@ export function Crest({ crests }: CrestProps) {
       <CrestIcon
         className="absolute top-[175px] left-[64px] w-14 h-14 z-20"
         index={crestIndex}
-        fill={crests[crestIndex].fill}
+        fill={crests[crestIndex]?.fill}
       />
 
-      <div className="absolute w-28 h-28 top-36 left-9 z-10" style={{ background: crests[crestIndex].backgroundColor }} />
+      <div className="absolute w-28 h-28 top-36 left-9 z-10" style={{ background: crests[crestIndex]?.backgroundColor }} />
     </div>
   )
 }

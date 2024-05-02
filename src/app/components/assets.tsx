@@ -23,8 +23,9 @@ export function Assets({
  }: DigiviceProps) {
   const [videoSrc, setVideoSrc] = useState('/videos/courage/agumon.mp4')
   const [imageSrc, setImageSrc] = useState('/images/courage/koromon.png')
-  const digimons = crests[crestIndex].digimons
-  const [isLastDigimon, setIsLastDigimon] = useState(digimonIndex >= digimons.length - 1)
+  const digimons = crests[crestIndex]?.digimons
+  const digimonLastIndex = digimons?.length ? digimons.length - 1 : 0
+  const [isLastDigimon, setIsLastDigimon] = useState(digimonIndex >= digimonLastIndex)
   const randomNumber = Math.floor(Math.random() * 4) + 1
   const isAlternativeEvolution = randomNumber === 4
   const isCourageCrest = crestIndex === 0
@@ -33,17 +34,17 @@ export function Assets({
     
   useEffect(() => {
     const digimonNewIndex = isLastDigimon ? 1 : digimonIndex + 1
-    const digimon = crests[crestIndex].digimons[digimonNewIndex]
-    const crest = crests[crestIndex].name
+    const digimon = crests[crestIndex]?.digimons[digimonNewIndex]
+    const crest = crests[crestIndex]?.name
     if (digimonIndex >= 4) setVideoSrc(`/videos/${digimon}.mp4`)
     else if (isSkullGreymon) setVideoSrc(`/videos/${crest}/${crests[crestIndex]?.alternativeEvolution}.mp4`)
     else setVideoSrc(`/videos/${crest}/${digimon}.mp4`)
   }, [crestIndex, crests, digimonIndex, isLastDigimon, isSkullGreymon, setVideoSrc])
 
   useEffect(() => {
-    const crest = crests[crestIndex].name
+    const crest = crests[crestIndex]?.name
     const imageIndex = !hasVideoEnded && digimonIndex >= 1 ? digimonIndex - 1 : digimonIndex
-    const digimon = crests[crestIndex].digimons[imageIndex]
+    const digimon = crests[crestIndex]?.digimons[imageIndex]
     if (digimonIndex >= 5 ) setImageSrc(`/images/${digimon}.png`)
     else if (isShowingSkullGreymon) setImageSrc(`/images/${crest}/${crests[crestIndex]?.alternativeEvolution}.png`)
     else setImageSrc(`/images/${crest}/${digimon}.png`)
@@ -51,8 +52,8 @@ export function Assets({
 
   useEffect(() => {
     if (isShowingSkullGreymon) setIsLastDigimon(true)
-    else setIsLastDigimon(digimonIndex >= digimons.length - 1)
-  }, [digimonIndex, digimons.length, isShowingSkullGreymon, setIsLastDigimon])
+    else setIsLastDigimon(digimonIndex >= digimonLastIndex)
+  }, [digimonIndex, digimonLastIndex, isShowingSkullGreymon, setIsLastDigimon])
   
   return (
     <>
@@ -66,7 +67,7 @@ export function Assets({
         priority={true}
       />
 
-      {!isVideoPlaying && ( 
+      {!isVideoPlaying && crests?.length > 0 && ( 
         <>
           <Image
             className="absolute top-[82px] left-[95px] z-30"
