@@ -63,8 +63,6 @@ export function Assets({
     }
   }, [isVideoPlaying, digimonIndex])
 
-
-
   // useEffect(() => {
   //   if (isShowingSkullGreymon) {
   //     setIsLastDigimon(true)
@@ -140,7 +138,7 @@ export function Assets({
         />
       )}
 
-      {!isVideoPlaying && (
+      {!isVideoPlaying && !videoRef.current && (
         <div className="text-white box-border inline-block absolute w-20 h-20 z-50 top-[86px] left-[99px] -rotate-90">
           <div className="box-border inline-block absolute left-2 w-4 bg-current animate-loading animation-delay-[-0.24s]" />
           <div className="box-border inline-block absolute left-8 w-4 bg-current animate-loading animation-delay-[-0.12s]" />
