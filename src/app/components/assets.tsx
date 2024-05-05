@@ -118,7 +118,7 @@ export function Assets({
   //   setIsShowingImage(true)
   }
 
-  const handleLoadError = () => {
+  const handleLoadedData = () => {
     setIsLoading(true)
   }
   
@@ -166,7 +166,7 @@ export function Assets({
           preload="none"
           onEnded={handleVideoEnd}
           playsInline
-          onError={handleLoadError}
+          onLoadedData={handleLoadedData}
         >
           <source src={videoSrc} type="video/mp4" />
           Your browser can&apos;t show the digimon evolution.
