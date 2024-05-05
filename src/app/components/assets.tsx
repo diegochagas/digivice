@@ -100,7 +100,7 @@ export function Assets({
         ref={videoRef}
         preload="none"
         onEnded={handleVideoEnd}
-        controlsList="nofullscreen"
+        playsInline
       >
         <source src={videoSrc} type="video/mp4" />
         Your browser does not support the video tag.

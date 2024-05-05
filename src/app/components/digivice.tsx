@@ -42,6 +42,7 @@ export function Digivice({ crests }: DigiviceProps) {
   function handlePrevCrest() {
     setDigimonIndex(0)
     setIsVideoPlaying(false)
+    setIsShowingImage(true)
     if (crestIndex > 0) setCrestIndex(prev => prev - 1)
     else setCrestIndex(crests.length - 1)
     videoRef.current?.load()
@@ -50,6 +51,7 @@ export function Digivice({ crests }: DigiviceProps) {
   function handleNextCrest() {
     setDigimonIndex(0)
     setIsVideoPlaying(false)
+    setIsShowingImage(true)
     if (crestIndex < crests.length - 1) setCrestIndex(prev => prev + 1)
     else setCrestIndex(0)
     videoRef.current?.load()
