@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useCrest } from '@/context/crest-context'
 import { Crests } from '@/data/types/crest'
 import { Assets } from './assets'
@@ -11,82 +11,79 @@ interface DigiviceProps {
 
 export function Digivice({ crests }: DigiviceProps) {
   const { crestIndex, setCrestIndex } = useCrest()
-  const videoRef = useRef<HTMLVideoElement>(null)
   const [digimonIndex, setDigimonIndex] = useState<number>(0)
-  const isLastDigimon = digimonIndex >= crests[crestIndex]?.digimons?.length - 1
+  // const [isEvolving, setIsEvolving] = useState(false)
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
-  const [isShowingImage, setIsShowingImage] = useState(true)
-  const [hasVideoEnded, setHasVideoEnded] = useState(false)
+  const lastCrestIndex = crests.length - 1
   
-  function handleEvolution() {
-    setIsShowingImage(false)
+  const isLastDigimon = useMemo(() => {
+    const lastDigimonIndex = crests[crestIndex]?.digimons?.length - 1
+    return digimonIndex === lastDigimonIndex
+  }, [crestIndex, crests, digimonIndex])
+  
+  const hasAlternativeEvolution = useMemo(() => {
+    const randomNumber = Math.floor(Math.random() * 4) + 1
+    const isPerfectForm = digimonIndex === 3
+    const isCourageCrest = crestIndex === 0
+    return (randomNumber === 4 && isCourageCrest && isPerfectForm)
+  }, [crestIndex, digimonIndex])
+  
+  function resetDigimon() {
+    setDigimonIndex(0)
+    setIsVideoPlaying(false)
+  }
 
-    if (isLastDigimon) {
-      videoRef.current?.pause()
-      
-      setIsVideoPlaying(false)
-      setHasVideoEnded(true)
-      
-      setDigimonIndex(0)
+  function onHandleNextDigimon() {
+    if (isLastDigimon || hasAlternativeEvolution) {
+      resetDigimon()
     } else {
-      videoRef.current?.load()
-      videoRef.current?.play()
-      
-      setIsVideoPlaying(true)
-      setHasVideoEnded(false)
-
       setDigimonIndex(prev => prev + 1)
+      setIsVideoPlaying(true)
     }
   }
   
-  function handlePrevCrest() {
-    setDigimonIndex(0)
-    setIsVideoPlaying(false)
-    setIsShowingImage(true)
-    if (crestIndex > 0) setCrestIndex(prev => prev - 1)
-    else setCrestIndex(crests.length - 1)
-    videoRef.current?.load()
+  function onHandlePrevCrest() {
+    resetDigimon()
+    
+    if (crestIndex > 0) {
+      setCrestIndex(prev => prev - 1)
+    } else {
+      setCrestIndex(lastCrestIndex)
+    }
   }
   
-  function handleNextCrest() {
-    setDigimonIndex(0)
-    setIsVideoPlaying(false)
-    setIsShowingImage(true)
-    if (crestIndex < crests.length - 1) setCrestIndex(prev => prev + 1)
-    else setCrestIndex(0)
-    videoRef.current?.load()
-  }
-
-  const handleVideoEnd = () => {
-    setHasVideoEnded(true)
-    setIsVideoPlaying(false)
-    setIsShowingImage(true)
+  function onHandleNextCrest() {
+    resetDigimon()
+    
+    if (crestIndex < lastCrestIndex) {
+      setCrestIndex(prev => prev + 1)
+    } else {
+      setCrestIndex(0)
+    }
   }
 
   return (
     <div className="relative">
       <button
         className="absolute cursor-pointer bg-transparent rounded-full top-[99px] left-4 w-[54px] h-[54px] hover:bg-blue-500 hover:bg-opacity-50 z-50"
-        onClick={handleEvolution}
+        onClick={onHandleNextDigimon}
       />
       <button
         className="absolute cursor-pointer bg-transparent rounded-full top-[77px] right-6 w-12 h-8 hover:bg-blue-500 hover:bg-opacity-50 z-50"
-        onClick={handlePrevCrest}
+        onClick={onHandlePrevCrest}
       />
       <button
         className="absolute cursor-pointer bg-transparent rounded-full top-[139px] right-6 w-12 h-8 hover:bg-blue-500 hover:bg-opacity-50 z-50"
-        onClick={handleNextCrest}
+        onClick={onHandleNextCrest}
       />
 
       <Assets
-        videoRef={videoRef}
-        isVideoPlaying={isVideoPlaying}
-        isShowingImage={isShowingImage}
-        hasVideoEnded={hasVideoEnded}
-        handleVideoEnd={handleVideoEnd}
         crests={crests}
         crestIndex={crestIndex}
         digimonIndex={digimonIndex}
+        hasAlternativeEvolution={hasAlternativeEvolution}
+        isVideoPlaying={isVideoPlaying}
+        setIsVideoPlaying={setIsVideoPlaying}
       />
     </div>
   )
