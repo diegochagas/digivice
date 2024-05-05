@@ -26,6 +26,7 @@ export function Assets({
   const digimons = crests[crestIndex]?.digimons
   const digimonLastIndex = digimons?.length ? digimons.length - 1 : 0
   const [isLastDigimon, setIsLastDigimon] = useState(digimonIndex >= digimonLastIndex)
+  const [isLoading, setIsLoading] = useState(false)
   // const isLoading = !isVideoPlaying && !isShowingImage
 
 
@@ -59,6 +60,7 @@ export function Assets({
   useEffect(() => {
     if (isVideoPlaying) {
       videoRef.current?.load()
+      setIsLoading(false)
       videoRef.current?.play()
     }
   }, [isVideoPlaying, digimonIndex])
@@ -115,6 +117,10 @@ export function Assets({
     setIsVideoPlaying(false)
   //   setIsShowingImage(true)
   }
+
+  const handleLoadError = () => {
+    setIsLoading(true)
+  }
   
   return (
     <>
@@ -160,6 +166,7 @@ export function Assets({
           preload="none"
           onEnded={handleVideoEnd}
           playsInline
+          onError={handleLoadError}
         >
           <source src={videoSrc} type="video/mp4" />
           Your browser can&apos;t show the digimon evolution.
