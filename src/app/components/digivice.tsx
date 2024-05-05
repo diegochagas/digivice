@@ -15,9 +15,12 @@ export function Digivice({ crests }: DigiviceProps) {
   const [digimonIndex, setDigimonIndex] = useState<number>(0)
   const isLastDigimon = digimonIndex >= crests[crestIndex]?.digimons?.length - 1
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+  const [isShowingImage, setIsShowingImage] = useState(true)
   const [hasVideoEnded, setHasVideoEnded] = useState(false)
   
   function handleEvolution() {
+    setIsShowingImage(false)
+
     if (isLastDigimon) {
       videoRef.current?.pause()
       
@@ -55,6 +58,7 @@ export function Digivice({ crests }: DigiviceProps) {
   const handleVideoEnd = () => {
     setHasVideoEnded(true)
     setIsVideoPlaying(false)
+    setIsShowingImage(true)
   }
 
   return (
@@ -75,6 +79,7 @@ export function Digivice({ crests }: DigiviceProps) {
       <Assets
         videoRef={videoRef}
         isVideoPlaying={isVideoPlaying}
+        isShowingImage={isShowingImage}
         hasVideoEnded={hasVideoEnded}
         handleVideoEnd={handleVideoEnd}
         crests={crests}

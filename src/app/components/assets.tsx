@@ -8,6 +8,7 @@ interface DigiviceProps {
   digimonIndex: number
   videoRef: Ref<HTMLVideoElement>
   isVideoPlaying: boolean
+  isShowingImage: boolean
   hasVideoEnded: boolean
   handleVideoEnd: () => void
 }
@@ -18,6 +19,7 @@ export function Assets({
   digimonIndex,
   videoRef,
   isVideoPlaying,
+  isShowingImage,
   hasVideoEnded,
   handleVideoEnd
  }: DigiviceProps) {
@@ -26,6 +28,7 @@ export function Assets({
   const digimons = crests[crestIndex]?.digimons
   const digimonLastIndex = digimons?.length ? digimons.length - 1 : 0
   const [isLastDigimon, setIsLastDigimon] = useState(digimonIndex >= digimonLastIndex)
+  const isLoading = !isVideoPlaying && !isShowingImage
   const randomNumber = Math.floor(Math.random() * 4) + 1
   const isAlternativeEvolution = randomNumber === 4
   const isCourageCrest = crestIndex === 0
@@ -67,24 +70,37 @@ export function Assets({
         priority={true}
       />
 
-      {!isVideoPlaying && crests?.length > 0 && ( 
-        <>
-          <Image
-            className="absolute top-[82px] left-[95px] z-30"
-            src={imageSrc}
-            alt="digimon"
-            width={88}
-            height={88}
-          />
-          <div className="absolute top-16 left-20 w-28 h-28 z-20" style={{ backgroundColor: '#0f2425' }} />
-        </>
+      {isLoading && (
+        <div className="text-white box-border inline-block absolute w-20 h-20 z-50 top-[86px] left-[99px] -rotate-90">
+          <div className="box-border inline-block absolute left-2 w-4 bg-current animate-loading animation-delay-[-0.24s]" />
+          <div className="box-border inline-block absolute left-8 w-4 bg-current animate-loading animation-delay-[-0.12s]" />
+          <div className="box-border inline-block absolute left-14 w-4 bg-current animate-loading animation-delay-[0s]" />
+        </div>
+      )}
+
+      {isShowingImage && ( 
+        <Image
+          className="absolute top-[82px] left-[95px] z-30"
+          src={imageSrc}
+          alt="digimon"
+          width={88}
+          height={88}
+        />
+      )}
+
+      {(isShowingImage || isLoading) && (
+        <div
+          className="absolute top-16 left-20 w-28 h-28 z-20"
+          style={{ backgroundColor: '#0f2425' }}
+        />
       )}
 
       <video
-        className="absolute w-[90px] h-[90px] top-[81px] left-[94px] z-10"
+        className="absolute w-[110px] h-[110px] top-[69px] left-[84px] z-10"
         ref={videoRef}
         preload="none"
         onEnded={handleVideoEnd}
+        controlsList="nofullscreen"
       >
         <source src={videoSrc} type="video/mp4" />
         Your browser does not support the video tag.
