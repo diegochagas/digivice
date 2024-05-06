@@ -44,6 +44,7 @@ export function Assets({
   //   } else {
   //     setVideoSrc(`/videos/${crest}/${digimon}.mp4`)
   //   }
+    setIsLoading(true)
     setVideoSrc(`/videos/${folderName}/${digimon}.mp4`)
   }, [crestIndex, crests, digimonIndex, hasAlternativeEvolution])
 
@@ -58,14 +59,9 @@ export function Assets({
     if (isVideoPlaying) {
       videoRef.current?.load()
       videoRef.current?.play()
+      setIsLoading(false)
     }
   }, [isVideoPlaying, digimonIndex])
-
-  useEffect(() => {
-    if (isVideoPlaying) {
-      setIsLoading(true)
-    }
-  }, [isVideoPlaying, videoSrc])
 
   // useEffect(() => {
   //   if (isShowingSkullGreymon) {
@@ -162,7 +158,6 @@ export function Assets({
           className="absolute w-[110px] h-[110px] top-[69px] left-[84px] z-10"
           ref={videoRef}
           preload="none"
-          onPlay={() => setIsLoading(false)}
           onEnded={handleVideoEnd}
           playsInline
         >
