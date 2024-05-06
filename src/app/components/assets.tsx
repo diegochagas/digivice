@@ -33,7 +33,7 @@ export function Assets({
     
   useEffect(() => {
     const isUltimateForm = digimonIndex === 5
-    const digimonNewIndex = isUltimateForm ? 1 : digimonIndex + 1
+    // const digimonNewIndex = isUltimateForm ? 1 : digimonIndex + 1
     // const digimon = crests[crestIndex]?.digimons[digimonNewIndex]
     const digimon = (hasAlternativeEvolution) ? crests[crestIndex]?.alternativeEvolution : crests[crestIndex]?.digimons[digimonIndex]
     const folderName = isUltimateForm ? 'ultimate' : crests[crestIndex]?.name
@@ -62,10 +62,10 @@ export function Assets({
   }, [isVideoPlaying, digimonIndex])
 
   useEffect(() => {
-    if (isVideoPlaying) {
+    if (!videoRef.current) {
       setIsLoading(true)
     }
-  }, [isVideoPlaying])
+  }, [])
 
   // useEffect(() => {
   //   if (isShowingSkullGreymon) {
