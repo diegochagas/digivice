@@ -158,6 +158,7 @@ export function Assets({
           className="absolute w-[110px] h-[110px] top-[69px] left-[84px] z-10"
           ref={videoRef}
           preload="none"
+          onPlay={() => setIsLoading(false)}
           onEnded={handleVideoEnd}
           playsInline
         >
