@@ -22,17 +22,7 @@ export function Assets({
   const videoRef = useRef<HTMLVideoElement>(null)
   const [videoSrc, setVideoSrc] = useState('/videos/courage/agumon.mp4')
   const [imageSrc, setImageSrc] = useState('/images/courage/koromon.png')
-  const [hasVideoEnded, setHasVideoEnded] = useState(false)
-  const digimons = crests[crestIndex]?.digimons
-  const digimonLastIndex = digimons?.length ? digimons.length - 1 : 0
-  const [isLastDigimon, setIsLastDigimon] = useState(digimonIndex >= digimonLastIndex)
-  const [isLoading, setIsLoading] = useState(false)
-  // const isLoading = !isVideoPlaying && !isShowingImage
-
-
-  const isCourageCrest = crestIndex === 0
-  const isSkullGreymon = hasAlternativeEvolution && isCourageCrest && digimonIndex === 2
-  const isShowingSkullGreymon = hasAlternativeEvolution && isCourageCrest && digimonIndex === 3
+  const isLoading = isVideoPlaying && !videoRef.current
     
   useEffect(() => {
     const isUltimateForm = digimonIndex === 5
@@ -60,7 +50,6 @@ export function Assets({
   useEffect(() => {
     if (isVideoPlaying) {
       videoRef.current?.load()
-      setIsLoading(false)
       videoRef.current?.play()
     }
   }, [isVideoPlaying, digimonIndex])
@@ -118,10 +107,6 @@ export function Assets({
   //   setIsShowingImage(true)
   }
 
-  const handleLoadedData = () => {
-    setIsLoading(true)
-  }
-  
   return (
     <>
       <Image
@@ -144,7 +129,7 @@ export function Assets({
         />
       )}
 
-      {isVideoPlaying && !videoRef.current && (
+      {isLoading && (
         <div className="text-white box-border inline-block absolute w-20 h-20 z-50 top-[86px] left-[99px] -rotate-90">
           <div className="box-border inline-block absolute left-2 w-4 bg-current animate-loading animation-delay-[-0.24s]" />
           <div className="box-border inline-block absolute left-8 w-4 bg-current animate-loading animation-delay-[-0.12s]" />
@@ -152,7 +137,7 @@ export function Assets({
         </div>
       )}
 
-      {(!isVideoPlaying) && (
+      {(!isVideoPlaying || isLoading) && (
         <div
           className="absolute top-16 left-20 w-28 h-28 z-20"
           style={{ backgroundColor: '#0f2425' }}
@@ -166,7 +151,6 @@ export function Assets({
           preload="none"
           onEnded={handleVideoEnd}
           playsInline
-          onLoadedData={handleLoadedData}
         >
           <source src={videoSrc} type="video/mp4" />
           Your browser can&apos;t show the digimon evolution.
