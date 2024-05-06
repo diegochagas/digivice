@@ -62,8 +62,10 @@ export function Assets({
   }, [isVideoPlaying, digimonIndex])
 
   useEffect(() => {
-    setIsLoading(true)
-  }, [videoSrc])
+    if (isVideoPlaying) {
+      setIsLoading(true)
+    }
+  }, [isVideoPlaying, videoSrc])
 
   // useEffect(() => {
   //   if (isShowingSkullGreymon) {
