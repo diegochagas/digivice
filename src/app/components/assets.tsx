@@ -61,21 +61,6 @@ export function Assets({
         {videoLoaded}
       </div>
 
-    
-      {isVideoPlaying && (
-      <video
-          className="absolute top-[300px] left-4 z-50"
-          ref={videoRef}
-          preload="none"
-          onEnded={() => setIsVideoPlaying(false)}
-          playsInline
-          controls
-        >
-          <source src={videoSrc} type="video/mp4" />
-          Your browser can&apos;t show the digimon evolution.
-        </video>
-      )}
-
       {!isVideoPlaying && ( 
         <Image
           className="absolute top-[82px] left-[95px] z-30"
