@@ -78,7 +78,7 @@ export function Assets({
         />
       )}
 
-      {isVideoPlaying && (
+      {/* {isVideoPlaying && ( */}
         <video
           className="absolute w-[110px] h-[110px] top-[69px] left-[84px] z-30"
           ref={videoRef}
@@ -89,7 +89,7 @@ export function Assets({
           <source src={videoSrc} type="video/mp4" />
           Your browser can&apos;t show the digimon evolution.
         </video>
-      )}
+      {/* )} */}
 
       {isVideoPlaying && (
         <div className="text-white box-border inline-block absolute w-20 h-20 z-20 top-[86px] left-[99px] -rotate-90">
