@@ -22,6 +22,7 @@ export function Assets({
   const videoRef = useRef<HTMLVideoElement>(null)
   const [videoSrc, setVideoSrc] = useState('/videos/courage/agumon.mp4')
   const [imageSrc, setImageSrc] = useState('/images/courage/koromon.png')
+  const [videoIsUndefined, setVideoIsUndefned] = useState<boolean>(false)
     
   useEffect(() => {
     const isUltimateForm = digimonIndex === 5
@@ -39,6 +40,8 @@ export function Assets({
   
   useEffect(() => {
     if (isVideoPlaying) {
+      if (!videoRef.current) setVideoIsUndefned(true)
+      else setVideoIsUndefned(false)
       videoRef.current?.load()
       videoRef.current?.play()
     }
@@ -55,6 +58,10 @@ export function Assets({
         height={248}
         priority={true}
       />
+
+      <div className="absolute z-50 top-[250px] text-red-500">
+        videoIsUndefined: {JSON.stringify(videoIsUndefined)}
+      </div>
 
       <video
           className="absolute top-[300px] left-4 z-50"
