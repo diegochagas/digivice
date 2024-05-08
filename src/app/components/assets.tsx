@@ -22,7 +22,6 @@ export function Assets({
   const videoRef = useRef<HTMLVideoElement>(null)
   const [videoSrc, setVideoSrc] = useState('/videos/courage/agumon.mp4')
   const [imageSrc, setImageSrc] = useState('/images/courage/koromon.png')
-  const [videoStarted, setVideoStarted] = useState(false);
     
   useEffect(() => {
     const isUltimateForm = digimonIndex === 5
@@ -44,10 +43,6 @@ export function Assets({
       videoRef.current?.play()
     }
   }, [isVideoPlaying, digimonIndex])
-
-  const handleVideoEnd = () => {
-    setIsVideoPlaying(false)
-  }
 
   return (
     <>
@@ -71,21 +66,12 @@ export function Assets({
         />
       )}
 
-      {/* {!isVideoPlaying && videoStarted && (
-        <div className="text-white box-border inline-block absolute w-20 h-20 z-50 top-[86px] left-[99px] -rotate-90">
-          <div className="box-border inline-block absolute left-2 w-4 bg-current animate-loading animation-delay-[-0.24s]" />
-          <div className="box-border inline-block absolute left-8 w-4 bg-current animate-loading animation-delay-[-0.12s]" />
-          <div className="box-border inline-block absolute left-14 w-4 bg-current animate-loading animation-delay-[0s]" />
-        </div>
-      )} */}
-
       {isVideoPlaying && (
         <video
           className="absolute w-[110px] h-[110px] top-[69px] left-[84px] z-30"
           ref={videoRef}
           preload="none"
-          onPlay={() => setVideoStarted(true)}
-          onEnded={handleVideoEnd}
+          onEnded={() => setIsVideoPlaying(false)}
           playsInline
         >
           <source src={videoSrc} type="video/mp4" />
@@ -93,8 +79,16 @@ export function Assets({
         </video>
       )}
 
+      {isVideoPlaying && (
+        <div className="text-white box-border inline-block absolute w-20 h-20 z-20 top-[86px] left-[99px] -rotate-90">
+          <div className="box-border inline-block absolute left-2 w-4 bg-current animate-loading animation-delay-[-0.24s]" />
+          <div className="box-border inline-block absolute left-8 w-4 bg-current animate-loading animation-delay-[-0.12s]" />
+          <div className="box-border inline-block absolute left-14 w-4 bg-current animate-loading animation-delay-[0s]" />
+        </div>
+      )}
+
       <div
-        className="absolute top-16 left-20 w-28 h-28 z-20"
+        className="absolute top-16 left-20 w-28 h-28 z-10"
         style={{ backgroundColor: '#0f2425' }}
       />
     </>
