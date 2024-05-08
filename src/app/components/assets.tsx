@@ -57,10 +57,12 @@ export function Assets({
         priority={true}
       />
 
-      <div className="absolute bottom-0 z-50 text-red-500">
-        <div>{`currentTime: ${videoRef.current?.currentTime ?? 0}`}</div>
-        <div>{videoSrc}</div>
-      </div>
+      {isVideoPlaying && (
+        <div className="absolute bottom-0 z-50 text-red-500">
+          <div>{`currentTime: ${videoRef.current?.currentTime ?? 0}`}</div>
+          <div>{videoSrc}</div>
+        </div>
+      )}
 
       {!isVideoPlaying && ( 
         <Image
