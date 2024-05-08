@@ -57,12 +57,8 @@ export function Assets({
         priority={true}
       />
 
-      <div className="absolute bottom-0 z-50 text-red-500">
-        
-      </div>
-
       <video
-          className="absolute w-[110px] h-[110px] top-[69px] left-[84px] z-30"
+          className="absolute top-[300px] left-4 z-50"
           ref={videoRef}
           preload="none"
           onEnded={() => setIsVideoPlaying(false)}
