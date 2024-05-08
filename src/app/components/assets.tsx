@@ -22,6 +22,7 @@ export function Assets({
   const videoRef = useRef<HTMLVideoElement>(null)
   const [videoSrc, setVideoSrc] = useState('/videos/courage/agumon.mp4')
   const [imageSrc, setImageSrc] = useState('/images/courage/koromon.png')
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false)
     
   useEffect(() => {
     const isUltimateForm = digimonIndex === 5
@@ -36,13 +37,21 @@ export function Assets({
     const digimon = (hasAlternativeEvolution) ? crests[crestIndex]?.alternativeEvolution : crests[crestIndex]?.digimons[digimonIndex]
     setImageSrc(`/images/${folderName}/${digimon}.png`)
   }, [crestIndex, crests, digimonIndex, hasAlternativeEvolution])
+
+  useEffect(() => {
+    videoRef.current?.load()
+  }, [videoSrc])
   
   useEffect(() => {
-    if (isVideoPlaying) {
-      videoRef.current?.load()
+    if (isVideoPlaying && isVideoLoaded) {
       videoRef.current?.play()
     }
-  }, [isVideoPlaying, digimonIndex])
+  }, [isVideoPlaying, isVideoLoaded])
+
+  function handleVideoEnded() {
+    setIsVideoPlaying(false)
+    setIsVideoLoaded(false)
+  }
 
   return (
     <>
@@ -71,7 +80,8 @@ export function Assets({
           className="absolute w-[110px] h-[110px] top-[69px] left-[84px] z-30"
           ref={videoRef}
           preload="none"
-          onEnded={() => setIsVideoPlaying(false)}
+          onLoadedData={() => setIsVideoLoaded(true)}
+          onEnded={handleVideoEnded}
           playsInline
         >
           <source src={videoSrc} type="video/mp4" />
