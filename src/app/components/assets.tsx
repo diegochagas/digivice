@@ -43,9 +43,14 @@ export function Assets({
       videoRef.current?.load()
       videoRef.current?.play()
 
-      videoRef.current?.play().catch(error => {
-        setVideoIsUndefned(JSON.stringify(error))
-      });
+      const handleLoadError = (event: any) => {
+        setVideoIsUndefned(`Error loading video: ${JSON.stringify(event)}`);
+      };
+      videoRef.current?.addEventListener('error', handleLoadError);
+      return () => {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        videoRef.current?.removeEventListener('error', handleLoadError);
+      };
     }
   }, [isVideoPlaying, digimonIndex])
 
