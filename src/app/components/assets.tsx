@@ -22,7 +22,6 @@ export function Assets({
   const videoRef = useRef<HTMLVideoElement>(null)
   const [videoSrc, setVideoSrc] = useState('/videos/courage/agumon.mp4')
   const [imageSrc, setImageSrc] = useState('/images/courage/koromon.png')
-  const [currentTime, setCurrentTime] = useState<number>(0)
     
   useEffect(() => {
     const isUltimateForm = digimonIndex === 5
@@ -62,7 +61,6 @@ export function Assets({
           ref={videoRef}
           preload="none"
           onEnded={() => setIsVideoPlaying(false)}
-          onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime ?? 0)}
           playsInline
         >
           <source src={videoSrc} type="video/mp4" />
@@ -85,7 +83,6 @@ export function Assets({
           ref={videoRef}
           preload="none"
           onEnded={() => setIsVideoPlaying(false)}
-          onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime ?? 0)}
           playsInline
         >
           <source src={videoSrc} type="video/mp4" />
