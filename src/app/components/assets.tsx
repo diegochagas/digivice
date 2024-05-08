@@ -40,14 +40,12 @@ export function Assets({
   
   useEffect(() => {
     if (isVideoPlaying) {
-      if (videoRef.current) {
-        setVideoIsUndefned('is not undefined')
-      } else {
-        setVideoIsUndefned('still undefined')
-      }
-      
       videoRef.current?.load()
       videoRef.current?.play()
+
+      videoRef.current?.play().catch(error => {
+        setVideoIsUndefned(JSON.stringify(error))
+      });
     }
   }, [isVideoPlaying, digimonIndex])
 
