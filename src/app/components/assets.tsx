@@ -58,7 +58,7 @@ export function Assets({
       />
 
       <video
-          className="absolute top-0 left-4 z-50"
+          className="absolute top-[300px] left-4 z-50"
           // ref={videoRef}
           preload="none"
           // onEnded={() => setIsVideoPlaying(false)}
