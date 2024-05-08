@@ -45,12 +45,12 @@ export function Assets({
   useEffect(() => {
     if (isVideoPlaying && isVideoLoaded) {
       videoRef.current?.play()
+      setIsVideoLoaded(false)
     }
   }, [isVideoPlaying, isVideoLoaded])
 
   function handleVideoEnded() {
     setIsVideoPlaying(false)
-    setIsVideoLoaded(false)
   }
 
   return (
