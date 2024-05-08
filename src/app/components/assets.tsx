@@ -67,6 +67,7 @@ export function Assets({
           preload="none"
           onEnded={() => setIsVideoPlaying(false)}
           playsInline
+          controls
         >
           <source src={videoSrc} type="video/mp4" />
           Your browser can&apos;t show the digimon evolution.
