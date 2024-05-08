@@ -57,8 +57,8 @@ export function Assets({
       />
       <div className="absolute bottom-0 z-50 text-red-500">
 
-      {`IsVideoPlaying: ${isVideoPlaying}`}
-      {videoSrc}
+      <div>{`IsVideoPlaying: ${isVideoPlaying}`}</div>
+      <div>{videoSrc}</div>
       </div>
       {!isVideoPlaying && ( 
         <Image
