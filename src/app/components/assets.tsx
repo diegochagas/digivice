@@ -55,7 +55,11 @@ export function Assets({
         height={248}
         priority={true}
       />
+      <div className="absolute bottom-0 z-50 text-red-500">
 
+      {`IsVideoPlaying: ${isVideoPlaying}`}
+      {videoSrc}
+      </div>
       {!isVideoPlaying && ( 
         <Image
           className="absolute top-[82px] left-[95px] z-30"
