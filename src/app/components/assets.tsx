@@ -22,7 +22,7 @@ export function Assets({
   const videoRef = useRef<HTMLVideoElement>(null)
   const [videoSrc, setVideoSrc] = useState('/videos/courage/agumon.mp4')
   const [imageSrc, setImageSrc] = useState('/images/courage/koromon.png')
-  const [videoIsUndefined, setVideoIsUndefned] = useState('is undefined')
+  const [videoLoaded, setVideoLoaded] = useState('not load');
     
   useEffect(() => {
     const isUltimateForm = digimonIndex === 5
@@ -42,15 +42,6 @@ export function Assets({
     if (isVideoPlaying) {
       videoRef.current?.load()
       videoRef.current?.play()
-
-      const handleLoadError = (event: any) => {
-        setVideoIsUndefned(`Error loading video: ${JSON.stringify(event)}`);
-      };
-      videoRef.current?.addEventListener('error', handleLoadError);
-      return () => {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        videoRef.current?.removeEventListener('error', handleLoadError);
-      };
     }
   }, [isVideoPlaying, digimonIndex])
 
@@ -67,7 +58,7 @@ export function Assets({
       />
 
       <div className="absolute z-50 top-[250px] text-red-500">
-        {videoIsUndefined}
+        {videoLoaded}
       </div>
 
       <video
@@ -75,6 +66,7 @@ export function Assets({
           ref={videoRef}
           preload="none"
           onEnded={() => setIsVideoPlaying(false)}
+          onLoadedData={() => setVideoLoaded('loaded')}
           playsInline
           controls
         >
@@ -98,6 +90,7 @@ export function Assets({
           ref={videoRef}
           preload="none"
           onEnded={() => setIsVideoPlaying(false)}
+          onLoadedData={() => setVideoLoaded('loaded')}
           playsInline
         >
           <source src={videoSrc} type="video/mp4" />
