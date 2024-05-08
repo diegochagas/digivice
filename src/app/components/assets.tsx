@@ -22,7 +22,7 @@ export function Assets({
   const videoRef = useRef<HTMLVideoElement>(null)
   const [videoSrc, setVideoSrc] = useState('/videos/courage/agumon.mp4')
   const [imageSrc, setImageSrc] = useState('/images/courage/koromon.png')
-  const [videoIsUndefined, setVideoIsUndefned] = useState<boolean>(false)
+  const [videoIsUndefined, setVideoIsUndefned] = useState('is undefined')
     
   useEffect(() => {
     const isUltimateForm = digimonIndex === 5
@@ -40,8 +40,12 @@ export function Assets({
   
   useEffect(() => {
     if (isVideoPlaying) {
-      if (!videoRef.current) setVideoIsUndefned(true)
-      else setVideoIsUndefned(false)
+      if (videoRef.current) {
+        setVideoIsUndefned('is not undefined')
+      } else {
+        setVideoIsUndefned('still undefined')
+      }
+      
       videoRef.current?.load()
       videoRef.current?.play()
     }
@@ -60,7 +64,7 @@ export function Assets({
       />
 
       <div className="absolute z-50 top-[250px] text-red-500">
-        videoIsUndefined: {JSON.stringify(videoIsUndefined)}
+        {videoIsUndefined}
       </div>
 
       <video
@@ -85,7 +89,7 @@ export function Assets({
         />
       )}
 
-      {/* {isVideoPlaying && ( */}
+      {isVideoPlaying && (
         <video
           className="absolute w-[110px] h-[110px] top-[69px] left-[84px] z-30"
           ref={videoRef}
@@ -96,7 +100,7 @@ export function Assets({
           <source src={videoSrc} type="video/mp4" />
           Your browser can&apos;t show the digimon evolution.
         </video>
-      {/* )} */}
+      )}
 
       {isVideoPlaying && (
         <div className="text-white box-border inline-block absolute w-20 h-20 z-20 top-[86px] left-[99px] -rotate-90">
