@@ -9,8 +9,6 @@ interface AssetsProps {
   hasAlternativeEvolution: boolean
   isVideoPlaying: boolean
   setIsVideoPlaying: (isVideoPlaying: boolean) => void
-  videoLoaded: boolean
-  setVideoLoaded: (videoLoaded: boolean) => void
 }
 
 export function Assets({
@@ -20,8 +18,6 @@ export function Assets({
   hasAlternativeEvolution,
   isVideoPlaying,
   setIsVideoPlaying,
-  videoLoaded,
-  setVideoLoaded,
  }: AssetsProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [videoSrc, setVideoSrc] = useState('/videos/courage/agumon.mp4')
@@ -74,7 +70,7 @@ export function Assets({
         />
       )}
 
-      {videoLoaded && (
+      {isVideoPlaying && (
         <div className="text-white box-border inline-block absolute w-20 h-20 z-50 top-[86px] left-[99px] -rotate-90">
           <div className="box-border inline-block absolute left-2 w-4 bg-current animate-loading animation-delay-[-0.24s]" />
           <div className="box-border inline-block absolute left-8 w-4 bg-current animate-loading animation-delay-[-0.12s]" />
@@ -82,7 +78,7 @@ export function Assets({
         </div>
       )}
 
-      {(!isVideoPlaying || videoLoaded) && (
+      {!isVideoPlaying && (
         <div
           className="absolute top-16 left-20 w-28 h-28 z-20"
           style={{ backgroundColor: '#0f2425' }}
@@ -94,7 +90,6 @@ export function Assets({
           className="absolute w-[110px] h-[110px] top-[69px] left-[84px] z-10"
           ref={videoRef}
           preload="none"
-          onLoadedData={() => setVideoLoaded(false)}
           onEnded={handleVideoEnd}
           playsInline
         >

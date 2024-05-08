@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useCrest } from '@/context/crest-context'
 import { Crests } from '@/data/types/crest'
 import { Assets } from './assets'
@@ -12,10 +12,8 @@ interface DigiviceProps {
 export function Digivice({ crests }: DigiviceProps) {
   const { crestIndex, setCrestIndex } = useCrest()
   const [digimonIndex, setDigimonIndex] = useState<number>(0)
-  // const [isEvolving, setIsEvolving] = useState(false)
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const lastCrestIndex = crests.length - 1
-  const [videoLoaded, setVideoLoaded] = useState(false);
   
   const isLastDigimon = useMemo(() => {
     const lastDigimonIndex = crests[crestIndex]?.digimons?.length - 1
@@ -45,7 +43,6 @@ export function Digivice({ crests }: DigiviceProps) {
   
   function onHandlePrevCrest() {
     resetDigimon()
-    setVideoLoaded(true)
     
     if (crestIndex > 0) {
       setCrestIndex(prev => prev - 1)
@@ -86,8 +83,6 @@ export function Digivice({ crests }: DigiviceProps) {
         hasAlternativeEvolution={hasAlternativeEvolution}
         isVideoPlaying={isVideoPlaying}
         setIsVideoPlaying={setIsVideoPlaying}
-        videoLoaded={videoLoaded}
-        setVideoLoaded={setVideoLoaded}
       />
     </div>
   )
