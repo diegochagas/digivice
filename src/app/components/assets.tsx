@@ -62,13 +62,12 @@ export function Assets({
       </div>
 
       <video
-          className="absolute top-[300px] left-4 z-50"
+          className="absolute w-[110px] h-[110px] top-[69px] left-[84px] z-30"
           ref={videoRef}
           preload="none"
-          // onEnded={() => setIsVideoPlaying(false)}
-          // onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime ?? 0)}
+          onEnded={() => setIsVideoPlaying(false)}
+          onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime ?? 0)}
           playsInline
-          controls
         >
           <source src={videoSrc} type="video/mp4" />
           Your browser can&apos;t show the digimon evolution.
