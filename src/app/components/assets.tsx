@@ -63,7 +63,7 @@ export function Assets({
           preload="none"
           // onEnded={() => setIsVideoPlaying(false)}
           // onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime ?? 0)}
-          // playsInline
+          playsInline
           controls
         >
           <source src={videoSrc} type="video/mp4" />
