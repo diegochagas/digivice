@@ -22,7 +22,16 @@ export function Assets({
   const videoRef = useRef<HTMLVideoElement>(null)
   const [videoSrc, setVideoSrc] = useState('/videos/courage/agumon.mp4')
   const [imageSrc, setImageSrc] = useState('/images/courage/koromon.png')
-  const isLoading = isVideoPlaying && !videoRef.current
+  const [hasVideoEnded, setHasVideoEnded] = useState(false)
+  const digimons = crests[crestIndex]?.digimons
+  const digimonLastIndex = digimons?.length ? digimons.length - 1 : 0
+  const [isLastDigimon, setIsLastDigimon] = useState(digimonIndex >= digimonLastIndex)
+  // const isLoading = !isVideoPlaying && !isShowingImage
+
+
+  const isCourageCrest = crestIndex === 0
+  const isSkullGreymon = hasAlternativeEvolution && isCourageCrest && digimonIndex === 2
+  const isShowingSkullGreymon = hasAlternativeEvolution && isCourageCrest && digimonIndex === 3
     
   useEffect(() => {
     const isUltimateForm = digimonIndex === 5
@@ -53,6 +62,8 @@ export function Assets({
       videoRef.current?.play()
     }
   }, [isVideoPlaying, digimonIndex])
+
+
 
   // useEffect(() => {
   //   if (isShowingSkullGreymon) {
@@ -106,7 +117,7 @@ export function Assets({
     setIsVideoPlaying(false)
   //   setIsShowingImage(true)
   }
-
+  
   return (
     <>
       <Image
@@ -129,7 +140,7 @@ export function Assets({
         />
       )}
 
-      {isLoading && (
+      {!isVideoPlaying && (
         <div className="text-white box-border inline-block absolute w-20 h-20 z-50 top-[86px] left-[99px] -rotate-90">
           <div className="box-border inline-block absolute left-2 w-4 bg-current animate-loading animation-delay-[-0.24s]" />
           <div className="box-border inline-block absolute left-8 w-4 bg-current animate-loading animation-delay-[-0.12s]" />
@@ -137,7 +148,7 @@ export function Assets({
         </div>
       )}
 
-      {(!isVideoPlaying || isLoading) && (
+      {(!isVideoPlaying) && (
         <div
           className="absolute top-16 left-20 w-28 h-28 z-20"
           style={{ backgroundColor: '#0f2425' }}
