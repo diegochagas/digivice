@@ -60,7 +60,7 @@ export function Assets({
           className="absolute top-[300px] left-4 z-50"
           ref={videoRef}
           preload="none"
-          onEnded={() => setIsVideoPlaying(false)}
+          // onEnded={() => setIsVideoPlaying(false)}
           playsInline
         >
           <source src={videoSrc} type="video/mp4" />
