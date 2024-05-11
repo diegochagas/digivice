@@ -59,7 +59,6 @@ export function Assets({
         className="relative z-40"
         src="/images/digivice.png"
         alt="digivice frame"
-        style={{ width:'280px', height: "248px" }}
         width={280}
         height={248}
         priority={true}
