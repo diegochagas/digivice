@@ -77,14 +77,27 @@ transparent PNGs. Raw generations are kept in `reactions-raw/` for QC; use
 `--forms`/`--emotions` to scope, `--redo` to regenerate, `--cutout-only` to
 redo the cutout without spending credits.
 
-### Run as a service (Linux, systemd user unit)
+### Run it on demand (Linux, systemd user unit)
+
+Install the unit once:
 
 ```bash
 cp digivice.service ~/.config/systemd/user/
 systemctl --user daemon-reload
-systemctl --user enable --now digivice
-loginctl enable-linger "$USER"   # start at boot without logging in
 ```
+
+Then start and stop it whenever you want it:
+
+```bash
+systemctl --user start digivice     # start
+systemctl --user stop digivice      # stop
+systemctl --user status digivice    # is it up?
+journalctl --user -u digivice -f    # logs
+```
+
+It stays off until you start it. To have it come up automatically at boot
+instead, `systemctl --user enable digivice` plus
+`loginctl enable-linger "$USER"`; `disable` undoes that.
 
 ### Phone
 
