@@ -1,0 +1,14 @@
+{
+  "name": "Digivice",
+  "short_name": "Digivice",
+  "description": "A Digimon partner living in your Digivice, powered by a local AI.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#08141a",
+  "theme_color": "#0f2425",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

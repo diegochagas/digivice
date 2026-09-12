@@ -3,31 +3,90 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --screen: #0f2425;
+  --panel: #10202b;
+  --panel-2: #172b38;
+  --ink: #e6f0f2;
+  --muted: #8fa7b1;
+  --accent: #f5a524;
+  --accent-2: #38bdf8;
+  --danger: #f87171;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+html, body {
+  height: 100%;
+  background: #08141a;
+  color: var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-image: url('/images/background.webp');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.panel {
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  backdrop-filter: blur(6px);
 }
+
+.btn {
+  @apply rounded-full px-4 py-2 text-sm font-semibold transition active:scale-95 disabled:opacity-40 disabled:active:scale-100;
+  background: var(--panel-2);
+  color: var(--ink);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.btn-accent { background: var(--accent); color: #1a1200; border-color: transparent; }
+.btn-sky { background: var(--accent-2); color: #04212e; border-color: transparent; }
+
+.bar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.bar > i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+.bubble {
+  position: relative;
+  background: #f4f7f8;
+  color: #10202b;
+  border-radius: 16px;
+  padding: 10px 14px;
+  font-size: 15px;
+  line-height: 1.35;
+}
+.bubble::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 28px;
+  border: 8px solid transparent;
+  border-top: 0;
+  border-bottom-color: #f4f7f8;
+}
+
+.pixel { image-rendering: auto; }
+
+@keyframes blink { 0%, 90%, 100% { opacity: 1 } 95% { opacity: 0.2 } }
+.blink { animation: blink 6s infinite; }
+
+.typing span {
+  display: inline-block;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--muted);
+  margin: 0 2px;
+  animation: bob 1s ease-in-out infinite;
+}
+.typing span:nth-child(2) { animation-delay: 0.15s }
+.typing span:nth-child(3) { animation-delay: 0.3s }
