@@ -7,7 +7,11 @@ Wants=network-online.target
 
 [Service]
 Type=simple
+TimeoutStartSec=300
 WorkingDirectory=%h/Projects/digivice
+# `npm run dev` replaces .next with a dev build, which `next start` cannot
+# serve, so rebuild when the production build is missing.
+ExecStartPre=/bin/sh -c '[ -f .next/BUILD_ID ] || npm run build'
 ExecStart=/usr/bin/env npm start
 Restart=always
 RestartSec=5

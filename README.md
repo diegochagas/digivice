@@ -99,6 +99,10 @@ It stays off until you start it. To have it come up automatically at boot
 instead, `systemctl --user enable digivice` plus
 `loginctl enable-linger "$USER"`; `disable` undoes that.
 
+Starting it rebuilds automatically if there is no production build, so it
+still works after a `npm run dev` session (dev mode replaces `.next` with a
+build that `next start` cannot serve).
+
 ### Phone
 
 Open `http://<laptop-ip-or-tailscale-name>:3030` on the phone and "Add to
