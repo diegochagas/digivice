@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p ${PORT:-3030} -H 0.0.0.0",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "next start -p ${PORT:-3030} -H 0.0.0.0",
+    "lint": "next lint",
+    "lore:build": "node scripts/build-lore-index.mjs",
+    "reactions": "python3 scripts/gen-reactions.py"
   },
   "dependencies": {
-    "@t3-oss/env-nextjs": "^0.10.1",
     "next": "14.2.2",
     "react": "^18",
     "react-dom": "^18",

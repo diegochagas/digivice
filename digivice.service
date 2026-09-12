@@ -1,0 +1,17 @@
+# systemd user unit — copy to ~/.config/systemd/user/ and adjust WorkingDirectory
+# to where this repo lives. `npm run build` must have been run first.
+[Unit]
+Description=Digivice (Next.js, local AI Digimon companion)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/Projects/digivice
+ExecStart=/usr/bin/env npm start
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=default.target
