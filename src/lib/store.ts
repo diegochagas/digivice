@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import { getConfig } from './config'
+import { migrateState } from './quests/migrate'
 import type { CompanionState } from './types'
 
 const STATE_FILE = 'state.json'
@@ -13,9 +14,7 @@ function stateFile() {
 export async function readState(): Promise<CompanionState | null> {
   try {
     const raw = await fs.readFile(stateFile(), 'utf8')
-    const parsed = JSON.parse(raw) as CompanionState
-    if (typeof parsed.dark !== 'boolean') parsed.dark = false
-    return parsed
+    return migrateState(JSON.parse(raw) as Record<string, unknown>)
   } catch (err) {
     if ((err as NodeJS.ErrnoException).code === 'ENOENT') return null
     throw err

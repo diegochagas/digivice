@@ -1,3 +1,5 @@
+import type { CrestStreak, DayKey, Quest, Reward, RolloverReport } from './quests/types'
+
 export const EMOTIONS = [
   'neutral', 'happy', 'excited', 'sad', 'angry',
   'hungry', 'sleepy', 'thinking', 'surprised', 'love',
@@ -5,13 +7,6 @@ export const EMOTIONS = [
 export type Emotion = typeof EMOTIONS[number]
 
 export type Lang = 'en' | 'pt'
-
-export interface Todo {
-  id: string
-  text: string
-  done: boolean
-  createdAt: number
-}
 
 export interface ChatMessage {
   role: 'user' | 'assistant'
@@ -21,7 +16,7 @@ export interface ChatMessage {
 }
 
 export interface CompanionState {
-  version: 1
+  version: 2
   crest: string | null
   stage: number
   /** Dark evolution (e.g. SkullGreymon): stuck until cared for, then regresses to Baby. */
@@ -36,7 +31,14 @@ export interface CompanionState {
   createdAt: number
   history: ChatMessage[]
   memories: string[]
-  todos: Todo[]
+  /** Habitica-style task layer; see quests/README in src/lib/quests/types.ts. */
+  quests: Quest[]
+  rewards: Reward[]
+  /** Currency earned by completing quests, spent on rewards. */
+  bits: number
+  crestStreaks: Record<string, CrestStreak>
+  lastRolloverDay: DayKey | null
+  lastRollover: RolloverReport | null
   pendingEvolution: { from: string; to: string } | null
   stats: { meals: number; plays: number; chats: number }
 }
@@ -57,6 +59,8 @@ export interface PublicState extends Omit<CompanionState, 'history'> {
   imageSrc: string | null
   reactions: Emotion[]
   nextEvolutionAt: number | null
+  /** Crest streak needed for the next stage, when one is still ahead. */
+  crestGate: { stage: number; required: number; current: number } | null
   evolutionVideo: string | null
   history: ChatMessage[]
   loreReady: boolean

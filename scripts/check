@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# scripts/check: the single gate (pre-push hook + CI). Fast first, slow last.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+npx tsc --noEmit
+npx eslint . --ext .ts,.tsx,.mjs
+npx vitest run
+npx next build
+# Report only: the Python sprite scripts predate the limits (see AGENTS.md).
+scripts/clean-code-audit

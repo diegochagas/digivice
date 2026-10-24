@@ -4,8 +4,9 @@ A Digimon partner that lives in a Digivice on your phone or laptop screen,
 powered entirely by local AI. It has the personality of the Digimon you
 choose, feelings that drift with hunger, energy and happiness (Tamagotchi
 style), evolves as your bond grows, remembers things about you, keeps a
-small task list, answers questions, looks things up on the web and knows
-Digimon lore from a local Wikimon index. On screen it animates as a 1-bit
+Habitica-style quest list (habits, dailies, to-dos and rewards) whose
+completion feeds its growth, answers questions, looks things up on the web
+and knows Digimon lore from a local Wikimon index. On screen it animates as a 1-bit
 LCD sprite, in the spirit of the original virtual pets.
 
 This started as a static Digivice toy (the frame, the twelve crest evolution
@@ -24,9 +25,11 @@ the [mini-ai](https://github.com/diegochagas/mini-ai) local stack
 | `src/lib/state.ts` | Tamagotchi state machine: hunger/energy/happiness drift per hour, feed/play/sleep, bond XP and evolution thresholds |
 | `src/lib/personas.ts` | One personality profile per evolution line (crest) plus how the voice shifts per stage |
 | `src/lib/prompt.ts` | Builds the system prompt: persona + live condition + memories + open tasks + retrieved lore + strict JSON output format |
-| `src/lib/companion.ts` | One chat turn: lore retrieval, Ollama call, `web_search` / `todo_add` / `todo_done` / `remember` handling |
+| `src/lib/companion.ts` | One chat turn: lore retrieval, Ollama call, `web_search` / `quest_add` / `quest_done` / `remember` handling |
+| `src/lib/quests/` | Pure quest engine: scoring, day rollover, rewards, crest streak gate, state migration, zod action reducer |
+| `src/lib/quest-prompt.ts` | The quest section of the system prompt (due dailies, habits, open to-dos, crest status) |
 | `src/lib/lore.ts` | Cosine search over the Wikimon index built by `scripts/build-lore-index.mjs` |
-| `src/app/api/state` | GET state (ticks time forward), POST care actions |
+| `src/app/api/state` | GET state (ticks time forward, runs the day rollover), POST care, quest and reward actions |
 | `src/app/api/chat` | POST `{ message }` (`null` = spontaneous feeling) |
 | `public/images/reactions/<form>/<emotion>.png` | Reaction sprites generated with Higgsfield (`scripts/gen-reactions.py`) |
 
@@ -39,6 +42,44 @@ to Baby once happiness climbs back above 75.
 Every reply from the model is a JSON object `{ reply, emotion, remember, tool }`.
 The `emotion` picks the sprite shown in the Digivice; when a form has no
 generated reactions the base sprite is used.
+
+## Chosen child: quests, crests and Bits
+
+The task layer works like Habitica, but the partner is the avatar:
+
+| Habitica | Digivice |
+|---|---|
+| Habits (+/−) | Habits: scoring up raises bond and happiness and pays Bits; scoring down costs happiness |
+| Dailies | Dailies due on chosen weekdays (none = every day). Done today → bond, happiness, Bits, streak +1. Missed → happiness −5/−9/−14 (easy/medium/hard) at the day rollover, streak reset |
+| To-dos | One-off quests: bond 6/12/20 |
+| HP bar | The partner's happiness. Enough neglect while the bond grows triggers the dark evolution |
+| Gold | **Bits**: earned 1:1 with bond from quests, spent on your own custom rewards |
+| Avatar / class | Your partner's crest. Every quest is tagged with a crest (courage, knowledge, reliability, ...) |
+
+**Crest streaks.** Each crest keeps a streak of consecutive kept days. A day is
+*kept* when at least one quest of that crest was completed and no due daily of
+that crest was missed; a day with nothing due and nothing done is neutral (rest
+days do not break it); a missed daily breaks it. Crests glow in the Crests panel
+from 3 days.
+
+**Evolution gate.** Bond and happiness still drive evolution, but past Child the
+partner also needs its own crest streak: 3 days for Adult, 7 for Perfect, 14 for
+Ultimate, 21 for the Jogress form (`CREST_STREAK_FOR_STAGE`). The dark evolution
+ignores the gate, so chatting and feeding without discipline still ends in
+SkullGreymon.
+
+**Day rollover.** The first request of a new local day closes every day since
+the last one: missed dailies are charged, crest streaks move, and a one-time
+banner shows what happened. After more than 7 days away only the last 7 are
+charged and every streak resets.
+
+**Partner chat.** The model sees today's dailies, habits and open to-dos and the
+crest status, and can call `quest_add` (kind + crest guessed from the activity)
+and `quest_done`. Saying "Agumon, remind me to work out every weekday" creates a
+Courage daily.
+
+**State file.** `data/state.json` is now `version: 2`; a v1 file (flat `todos`)
+is migrated on first read, old to-dos becoming untagged medium to-dos.
 
 ## Requirements
 

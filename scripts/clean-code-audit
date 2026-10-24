@@ -1,0 +1,119 @@
+#!/usr/bin/env python3
+"""Report source files and functions that break the dev-playbook clean-code limits.
+
+Checks git-tracked source files (js/ts/py/sh and scripts/*) for file length,
+and Python/bash functions for body length. JS/TS function length is ESLint's job
+(templates/nextjs/eslint-clean-code.mjs). Exit code 1 only with --strict.
+
+Example:
+    scripts/clean-code-audit                 # report, always exits 0
+    scripts/clean-code-audit --strict        # fail scripts/check on any violation
+    scripts/clean-code-audit --max-file-lines 300 lib/   # tighter, one folder
+"""
+
+from __future__ import annotations
+
+import argparse
+import ast
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+SOURCE_SUFFIXES = {".js", ".mjs", ".cjs", ".ts", ".tsx", ".jsx", ".py", ".sh", ".bash"}
+SKIPPED_DIR_PARTS = {"node_modules", ".next", "dist", "build", "vendor", "coverage", "public", "__snapshots__"}
+TEST_MARKERS = ("tests/", "__tests__/", "e2e/", ".test.", ".spec.", "_test.py", "test_")
+BASH_FUNCTION_START = re.compile(r"^(?:function\s+)?([A-Za-z_][A-Za-z0-9_:-]*)\s*\(\)\s*\{\s*$")
+
+
+def tracked_source_files(roots: list[str], include_tests: bool) -> list[Path]:
+    """Return git-tracked files under roots that look like source code."""
+    listing = subprocess.run(["git", "ls-files", "-z", "--", *roots], capture_output=True, check=True)
+    candidates = (Path(name) for name in listing.stdout.decode().split("\0") if name)
+    return [path for path in candidates if is_source_file(path, include_tests)]
+
+
+def is_source_file(path: Path, include_tests: bool) -> bool:
+    if SKIPPED_DIR_PARTS.intersection(path.parts):
+        return False
+    if not include_tests and any(marker in path.as_posix() for marker in TEST_MARKERS):
+        return False
+    return path.suffix in SOURCE_SUFFIXES or (path.parent.name == "scripts" and path.suffix == "")
+
+
+def count_code_lines(path: Path) -> int:
+    """Lines that are neither blank nor a pure comment line."""
+    code_lines = 0
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        stripped = line.strip()
+        if stripped and not stripped.startswith(("#", "//", "*", "/*")):
+            code_lines += 1
+    return code_lines
+
+
+def long_python_functions(path: Path, limit: int) -> list[tuple[str, int, int]]:
+    """(name, line, length) for every def whose body exceeds limit lines."""
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
+    except SyntaxError:
+        return []
+    found = []
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            length = (node.end_lineno or node.lineno) - node.lineno
+            if length > limit:
+                found.append((node.name, node.lineno, length))
+    return found
+
+
+def long_bash_functions(path: Path, limit: int) -> list[tuple[str, int, int]]:
+    """(name, line, length) for top-level `name() {` ... `}` blocks longer than limit."""
+    found = []
+    current_name, start_line = None, 0
+    for number, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+        match = BASH_FUNCTION_START.match(line)
+        if match:
+            current_name, start_line = match.group(1), number
+        elif line.rstrip() == "}" and current_name:
+            if number - start_line > limit:
+                found.append((current_name, start_line, number - start_line))
+            current_name = None
+    return found
+
+
+def long_functions(path: Path, limit: int) -> list[tuple[str, int, int]]:
+    if path.suffix == ".py":
+        return long_python_functions(path, limit)
+    if path.suffix in {".sh", ".bash"} or path.suffix == "":
+        return long_bash_functions(path, limit)
+    return []
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("roots", nargs="*", default=["."], help="paths to scan (default: whole repo)")
+    parser.add_argument("--max-file-lines", type=int, default=500, help="hard limit per file (default 500)")
+    parser.add_argument("--max-function-lines", type=int, default=20, help="limit per function body (default 20)")
+    parser.add_argument("--include-tests", action="store_true", help="also scan test and e2e files")
+    parser.add_argument("--strict", action="store_true", help="exit 1 when anything is over a limit")
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    files = tracked_source_files(args.roots, args.include_tests)
+    big_files = [(count_code_lines(path), path) for path in files]
+    big_files = sorted(((n, p) for n, p in big_files if n > args.max_file_lines), reverse=True)
+    long_funcs = [(path, *item) for path in files for item in long_functions(path, args.max_function_lines)]
+
+    for lines, path in big_files:
+        print(f"FILE  {path}: {lines} code lines (limit {args.max_file_lines})")
+    for path, name, line, length in long_funcs:
+        print(f"FUNC  {path}:{line} {name}(): {length} lines (limit {args.max_function_lines})")
+    print(f"clean-code-audit: {len(files)} files scanned, {len(big_files)} over the file limit, "
+          f"{len(long_funcs)} functions over the function limit")
+    return 1 if args.strict and (big_files or long_funcs) else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { readState, updateState, writeState } from '@/lib/store'
-import { applyAction, checkEvolution, getLine, listLines, newState, tick } from '@/lib/state'
+import { advance, applyAction, checkEvolution, getLine, listLines, newState } from '@/lib/state'
 import { toPublic } from '@/lib/companion'
 import { PERSONAS } from '@/lib/personas'
 import { ollamaReachable } from '@/lib/ollama'
+import { applyQuestAction, QUEST_ACTION_NAMES, questActionOptions, type QuestAction } from '@/lib/quests/actions'
+import type { CompanionState } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,25 +19,60 @@ export async function GET() {
       ollama: await ollamaReachable(),
     })
   }
-  const ticked = checkEvolution(tick(current))
-  if (ticked !== current) await writeState(ticked)
-  return NextResponse.json({ state: await toPublic(ticked), ollama: await ollamaReachable() })
+  const advanced = advance(current)
+  if (advanced !== current) await writeState(advanced)
+  return NextResponse.json({ state: await toPublic(advanced), ollama: await ollamaReachable() })
 }
 
-const actionSchema = z.discriminatedUnion('action', [
+const careOptions = [
   z.object({ action: z.literal('choose'), crest: z.string(), lang: z.enum(['en', 'pt']).default('en') }),
   z.object({ action: z.literal('feed') }),
   z.object({ action: z.literal('play') }),
   z.object({ action: z.literal('sleep') }),
   z.object({ action: z.literal('wake') }),
   z.object({ action: z.literal('evolution_seen') }),
+  z.object({ action: z.literal('rollover_seen') }),
   z.object({ action: z.literal('lang'), lang: z.enum(['en', 'pt']) }),
-  z.object({ action: z.literal('todo_toggle'), id: z.string() }),
-  z.object({ action: z.literal('todo_delete'), id: z.string() }),
-  z.object({ action: z.literal('todo_add'), text: z.string().min(1).max(200) }),
   z.object({ action: z.literal('forget'), index: z.number().int().min(0) }),
   z.object({ action: z.literal('reset') }),
-])
+] as const
+const careSchema = z.discriminatedUnion('action', [...careOptions])
+type CareAction = z.infer<typeof careSchema>
+const actionSchema = z.discriminatedUnion('action', [...careOptions, ...questActionOptions])
+type StateAction = z.infer<typeof actionSchema>
+
+type CareInput = Exclude<CareAction, { action: 'choose' }>
+
+function applyPetCare(state: CompanionState, input: CareInput): CompanionState | null {
+  switch (input.action) {
+    case 'feed': return state.sleeping ? state : applyAction(state, 'feed')
+    case 'play': return state.sleeping ? state : applyAction(state, 'play')
+    case 'sleep': return { ...state, sleeping: true }
+    case 'wake': return { ...state, sleeping: false }
+    default: return null
+  }
+}
+
+function applyBookkeeping(state: CompanionState, input: CareInput): CompanionState {
+  switch (input.action) {
+    case 'evolution_seen': return { ...state, pendingEvolution: null }
+    case 'rollover_seen': return { ...state, lastRollover: null }
+    case 'lang': return { ...state, lang: input.lang }
+    case 'forget': return { ...state, memories: state.memories.filter((_, i) => i !== input.index) }
+    case 'reset': return newState(state.crest ?? 'courage', state.lang)
+    default: return state
+  }
+}
+
+function applyCareAction(state: CompanionState, input: CareInput): CompanionState {
+  return applyPetCare(state, input) ?? applyBookkeeping(state, input)
+}
+
+function applyStateAction(current: CompanionState, input: Exclude<StateAction, { action: 'choose' }>): CompanionState {
+  const state = advance(current)
+  if (QUEST_ACTION_NAMES.has(input.action)) return checkEvolution(applyQuestAction(state, input as QuestAction))
+  return applyCareAction(state, input as CareInput)
+}
 
 export async function POST(req: Request) {
   const body = actionSchema.safeParse(await req.json().catch(() => null))
@@ -44,47 +81,12 @@ export async function POST(req: Request) {
 
   const result = await updateState(async current => {
     if (input.action === 'choose') {
-      if (!getLine(input.crest)) throw new Error('unknown crest')
+      if (!getLine(input.crest)) throw new Error(`unknown crest "${input.crest}": expected one of ${listLines().map(l => l.crest).join(', ')}`)
       const state = newState(input.crest, input.lang)
       return { state, result: state }
     }
     if (!current) throw new Error('no companion yet')
-    let state = checkEvolution(tick(current))
-    switch (input.action) {
-      case 'feed':
-        if (!state.sleeping) state = applyAction(state, 'feed')
-        break
-      case 'play':
-        if (!state.sleeping) state = applyAction(state, 'play')
-        break
-      case 'sleep':
-        state = { ...state, sleeping: true }
-        break
-      case 'wake':
-        state = { ...state, sleeping: false }
-        break
-      case 'evolution_seen':
-        state = { ...state, pendingEvolution: null }
-        break
-      case 'lang':
-        state = { ...state, lang: input.lang }
-        break
-      case 'todo_toggle':
-        state = { ...state, todos: state.todos.map(t => (t.id === input.id ? { ...t, done: !t.done } : t)) }
-        break
-      case 'todo_delete':
-        state = { ...state, todos: state.todos.filter(t => t.id !== input.id) }
-        break
-      case 'todo_add':
-        state = { ...state, todos: [...state.todos, { id: Math.random().toString(36).slice(2, 8), text: input.text, done: false, createdAt: Date.now() }] }
-        break
-      case 'forget':
-        state = { ...state, memories: state.memories.filter((_, i) => i !== input.index) }
-        break
-      case 'reset':
-        state = newState(state.crest ?? 'courage', state.lang)
-        break
-    }
+    const state = applyStateAction(current, input)
     return { state, result: state }
   }).catch((err: Error) => ({ error: err.message }))
 

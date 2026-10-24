@@ -1,4 +1,7 @@
 import crestsJson from '@/data/crests.json'
+import { clamp } from './clamp'
+import { rolloverDays } from './quests/rollover'
+import { crestGateOpen } from './quests/streaks'
 import type { CompanionState, Emotion, Lang, LineInfo } from './types'
 
 const HOUR = 3_600_000
@@ -25,8 +28,6 @@ const DRIFT = {
   awake: { hunger: +5, energy: -4, happiness: -2 },
   asleep: { hunger: +2, energy: +14, happiness: -0.5 },
 }
-
-const clamp = (v: number, lo = 0, hi = 100) => Math.max(lo, Math.min(hi, v))
 
 export function listLines(): LineInfo[] {
   return crestsJson.crests.map(c => ({
@@ -56,7 +57,7 @@ export function assetFolder(crest: string, digimon: string): string {
 
 export function newState(crest: string, lang: Lang, now = Date.now()): CompanionState {
   return {
-    version: 1,
+    version: 2,
     crest,
     stage: 0,
     dark: false,
@@ -70,7 +71,12 @@ export function newState(crest: string, lang: Lang, now = Date.now()): Companion
     createdAt: now,
     history: [],
     memories: [],
-    todos: [],
+    quests: [],
+    rewards: [],
+    bits: 0,
+    crestStreaks: {},
+    lastRolloverDay: null,
+    lastRollover: null,
     pendingEvolution: null,
     stats: { meals: 0, plays: 0, chats: 0 },
   }
@@ -127,8 +133,15 @@ export function checkEvolution(state: CompanionState): CompanionState {
     return { ...state, dark: true, pendingEvolution: { from, to: line.alternativeEvolution } }
   }
   if (state.happiness < EVOLUTION_MIN_HAPPINESS) return state
+  // Crest gate: discipline, not just affection, carries the partner past Child.
+  if (!crestGateOpen(state, state.stage + 1)) return state
   const to = line.digimons[state.stage + 1]
   return { ...state, stage: state.stage + 1, pendingEvolution: { from, to } }
+}
+
+/** Everything time does between two requests: stat drift, day rollover (missed dailies), evolution check. */
+export function advance(state: CompanionState, now = Date.now()): CompanionState {
+  return checkEvolution(rolloverDays(tick(state, now), now))
 }
 
 export function idleEmotion(state: CompanionState): Emotion {

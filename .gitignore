@@ -11,3 +11,10 @@
 .DS_Store
 .venv-tools/
 tsconfig.tsbuildinfo
+
+# tests
+/e2e/.data/
+/e2e/screenshots/
+/playwright-report/
+/test-results/
+/coverage/
