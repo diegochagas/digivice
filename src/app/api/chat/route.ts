@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { readState, writeState } from '@/lib/store'
-import { checkEvolution, tick } from '@/lib/state'
+import { advance, checkEvolution } from '@/lib/state'
 import { runTurn, sleepingReply, toPublic } from '@/lib/companion'
 
 export const dynamic = 'force-dynamic'
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   const current = await readState()
   if (!current) return NextResponse.json({ error: 'no companion yet' }, { status: 400 })
 
-  const state = checkEvolution(tick(current))
+  const state = advance(current)
   if (state.sleeping) {
     await writeState(state)
     const r = sleepingReply(state)

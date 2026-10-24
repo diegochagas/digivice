@@ -1,6 +1,7 @@
 import { PERSONAS, STAGE_VOICE } from './personas'
 import { EMOTIONS, type CompanionState } from './types'
 import { currentDigimon, describeCondition, displayName, getLine, STAGE_NAMES } from './state'
+import { describeQuests } from './quest-prompt'
 
 export interface PromptContext {
   lore: string
@@ -36,10 +37,7 @@ Let your condition colour how you speak: mention hunger, tiredness or loneliness
     sections.push(`THINGS YOU REMEMBER ABOUT YOUR TAMER:\n- ${state.memories.join('\n- ')}`)
   }
 
-  const openTodos = state.todos.filter(t => !t.done)
-  if (openTodos.length) {
-    sections.push(`YOUR TAMER'S OPEN TASKS (you help track them):\n${openTodos.map(t => `- [${t.id}] ${t.text}`).join('\n')}`)
-  }
+  sections.push(describeQuests(state, ctx.now))
 
   if (ctx.lore) {
     sections.push(`DIGIMON ENCYCLOPEDIA EXCERPTS (from Wikimon; use these for lore questions, prefer them over memory, and never invent facts that contradict them):\n${ctx.lore}`)
@@ -51,6 +49,7 @@ Let your condition colour how you speak: mention hunger, tiredness or loneliness
 - Keep replies short: one to three sentences, like speech bubbles. Give longer answers only when the tamer asks for detail or an explanation.
 - You know Digimon lore deeply (series, characters, evolutions, levels, attributes, attacks). Answer confidently when you know, use the encyclopedia excerpts when given, and admit it when you do not know.
 - You help with small everyday tasks: answering questions, quick explanations, translations, ideas, reminders and to-do items, simple math, and looking things up on the web.
+- You are also the tamer's quest companion: you care about their dailies and habits because your own growth depends on them. Nudge gently about dailies still due today, celebrate completed quests and streaks, and never nag more than once per message.
 - If the tamer asks for a real-world fact you cannot know reliably (news, prices, weather, unfamiliar people, products, places, anything recent), ${ctx.searchEnabled ? 'use the web_search tool instead of guessing.' : 'say honestly that you cannot look it up right now.'}
 ${ctx.idle ? `- This turn there is no message from the tamer: spontaneously say something short about how you feel right now or what you are thinking, as your own initiative, in ${state.lang === 'pt' ? 'Brazilian Portuguese' : 'English'}.` : ''}`)
 
@@ -59,9 +58,9 @@ ${ctx.idle ? `- This turn there is no message from the tamer: spontaneously say 
   "reply": "what you say to the tamer",
   "emotion": one of ${JSON.stringify(EMOTIONS)},
   "remember": "a short new fact ABOUT THE TAMER (their name, tastes, job, plans, people in their life) worth keeping, or null — never facts about yourself",
-  "tool": null | {"name": "web_search", "query": "search terms"} | {"name": "todo_add", "text": "task text"} | {"name": "todo_done", "id": "task id"}
+  "tool": null | {"name": "web_search", "query": "search terms"} | {"name": "quest_add", "kind": "habit" | "daily" | "todo", "text": "quest text", "crest": "courage" | "friendship" | "love" | "knowledge" | "sincerity" | "reliability" | "hope" | "light" | "kindness" | null} | {"name": "quest_done", "id": "quest id"}
 }
-"emotion" is the face you make while saying the reply. Use "todo_add" when the tamer asks you to remember a task or reminder, "todo_done" when they say a task is finished, and "web_search" only when you truly need the web (then keep "reply" as a short in-character line like "let me check!").`)
+"emotion" is the face you make while saying the reply. Use "quest_add" when the tamer asks you to track something: "daily" for routines on a schedule (workout, study), "habit" for things done any time, "todo" for one-offs; pick the crest that fits the activity (courage = body/sport, knowledge = study/reading, friendship = people, love = family/care, sincerity = honesty/creative truth, reliability = money/chores/work, hope = long-term goals, light = faith/rest, kindness = helping others) or null. Use "quest_done" when they say a quest is finished, and "web_search" only when you truly need the web (then keep "reply" as a short in-character line like "let me check!").`)
 
   return sections.join('\n\n')
 }

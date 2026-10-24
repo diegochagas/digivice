@@ -1,3 +1,62 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "max-lines": [
+      "error",
+      {
+        "max": 500,
+        "skipBlankLines": true,
+        "skipComments": true
+      }
+    ],
+    "max-lines-per-function": [
+      "warn",
+      {
+        "max": 40,
+        "skipBlankLines": true,
+        "skipComments": true,
+        "IIFEs": true
+      }
+    ],
+    "max-depth": [
+      "warn",
+      3
+    ],
+    "complexity": [
+      "warn",
+      10
+    ],
+    "max-params": [
+      "warn",
+      4
+    ],
+    "no-nested-ternary": "warn"
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.ts",
+        "**/*.tsx"
+      ],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "error"
+      },
+      "plugins": [
+        "@typescript-eslint"
+      ]
+    },
+    {
+      "files": [
+        "**/*.test.*",
+        "**/*.spec.*",
+        "tests/**",
+        "e2e/**",
+        "scripts/**"
+      ],
+      "rules": {
+        "max-lines-per-function": "off",
+        "max-lines": "off"
+      }
+    }
+  ]
 }

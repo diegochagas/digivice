@@ -12,6 +12,11 @@ import { formatResults, searchEnabled, webSearch } from './search'
 import {
   applyAction, assetFolder, currentDigimon, displayName, idleEmotion, nextEvolutionAt, STAGE_NAMES,
 } from './state'
+import { newId } from './ids'
+import { normalizeCrest } from './crests'
+import { completeQuest, scoreHabit } from './quests/scoring'
+import { crestStreakOf, crestStreakRequired } from './quests/streaks'
+import { newQuest, QUEST_KINDS } from './quests/types'
 import { EMOTIONS, type ChatMessage, type CompanionState, type Emotion, type PublicState } from './types'
 
 const HISTORY_LIMIT = 24
@@ -36,6 +41,12 @@ async function availableReactions(digimon: string): Promise<Emotion[]> {
 
 export function invalidateReactionCache() {
   reactionCache.clear()
+}
+
+function crestGateOf(state: CompanionState): PublicState['crestGate'] {
+  if (nextEvolutionAt(state) === null) return null
+  const stage = state.stage + 1
+  return { stage, required: crestStreakRequired(stage), current: crestStreakOf(state, state.crest) }
 }
 
 export async function toPublic(state: CompanionState): Promise<PublicState> {
@@ -65,6 +76,7 @@ export async function toPublic(state: CompanionState): Promise<PublicState> {
     imageSrc,
     reactions,
     nextEvolutionAt: nextEvolutionAt(state),
+    crestGate: crestGateOf(state),
     evolutionVideo,
     loreReady: await loreReady(),
     searchEnabled: searchEnabled(),
@@ -77,8 +89,8 @@ const replySchema = z.object({
   remember: z.string().nullable().optional(),
   tool: z.union([
     z.object({ name: z.literal('web_search'), query: z.string().min(1) }),
-    z.object({ name: z.literal('todo_add'), text: z.string().min(1) }),
-    z.object({ name: z.literal('todo_done'), id: z.string().min(1) }),
+    z.object({ name: z.literal('quest_add'), kind: z.enum(QUEST_KINDS).catch('todo'), text: z.string().min(1), crest: z.string().nullable().optional() }),
+    z.object({ name: z.literal('quest_done'), id: z.string().min(1) }),
     z.null(),
   ]).optional(),
 })
@@ -125,7 +137,7 @@ export async function runTurn(state: CompanionState, message: string | null): Pr
   else messages.push({ role: 'user', content: '(no message — share how you feel right now, in one or two sentences)' })
 
   let parsed = parseReply(await chat(messages, { json: true }))
-  let next = { ...state, todos: [...state.todos], memories: [...state.memories], history: [...state.history] }
+  let next = { ...state, quests: [...state.quests], memories: [...state.memories], history: [...state.history] }
   let searched: string | undefined
 
   if (parsed.tool?.name === 'web_search' && canSearch && message) {
@@ -142,11 +154,11 @@ export async function runTurn(state: CompanionState, message: string | null): Pr
       },
     ]
     parsed = parseReply(await chat(followUp, { json: true, temperature: 0.5 }))
-  } else if (parsed.tool?.name === 'todo_add') {
-    next.todos.push({ id: Math.random().toString(36).slice(2, 8), text: parsed.tool.text, done: false, createdAt: Date.now() })
-  } else if (parsed.tool?.name === 'todo_done') {
-    const id = parsed.tool.id
-    next.todos = next.todos.map(t => (t.id === id || t.text.toLowerCase() === id.toLowerCase() ? { ...t, done: true } : t))
+  } else if (parsed.tool?.name === 'quest_add') {
+    const { kind, text, crest } = parsed.tool
+    next.quests.push(newQuest({ kind, text, crest: normalizeCrest(crest) }, newId(), Date.now()))
+  } else if (parsed.tool?.name === 'quest_done') {
+    next = completeByIdOrText(next, parsed.tool.id)
   }
 
   if (parsed.remember && parsed.remember.trim().length > 3) {
@@ -163,6 +175,13 @@ export async function runTurn(state: CompanionState, message: string | null): Pr
   if (message) next = applyAction(next, 'chat')
 
   return { reply: parsed.reply, emotion: parsed.emotion, state: next, searched }
+}
+
+/** The model may echo an id or the quest text; habits are scored up, dailies/to-dos completed. */
+function completeByIdOrText(state: CompanionState, ref: string, now = Date.now()): CompanionState {
+  const quest = state.quests.find(q => q.id === ref || q.text.toLowerCase() === ref.toLowerCase())
+  if (!quest) return state
+  return quest.kind === 'habit' ? scoreHabit(state, quest.id, 'up', now) : completeQuest(state, quest.id, now)
 }
 
 export function sleepingReply(state: CompanionState): { reply: string; emotion: Emotion } {
